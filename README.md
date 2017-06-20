@@ -25,16 +25,16 @@ $ npm i
 # start application
 $ npm start
 # create a user via the REST API
-curl -H "Content-Type: application/json" -X POST -d '{"username":"user","password":"pw"}' http://localhost:3333/rest/register
+curl -H "Content-Type: application/json" -X POST -d '{"username":"user","password":"pw"}' http://localhost:2017/rest/register
 # login a user via the REST API
 # you will get a json with a token and this is your token to get access to the GraphQL API
-curl -H "Content-Type: application/json" -X POST -d '{"username":"user","password":"pw"}' http://localhost:3333/rest/login
+curl -H "Content-Type: application/json" -X POST -d '{"username":"user","password":"pw"}' http://localhost:2017/rest/login
 # requesting a user via the GraphQL API
-curl -i -H "Content-Type:application/json" -H "Authorization: Bearer <token>" -X POST -d '{"query": "{user{id, username}}"}'  http://localhost:3333/graphqlhttp://localhost:3333/graphql
+curl -i -H "Content-Type:application/json" -H "Authorization: Bearer <token>" -X POST -d '{"query": "{user{id, username}}"}'  http://localhost:2017/graphqlhttp://localhost:2017/graphql
 # creating a note for a user via the GraphQL API
-curl -i -H "Content-Type:application/json" -H "Authorization: Bearer <token>" -X POST -d '{"query": "mutation{createNote(UserId:1,note:\"this is a note\"){id,UserId,note}}"}' http://localhost:3333/graphql
+curl -i -H "Content-Type:application/json" -H "Authorization: Bearer <token>" -X POST -d '{"query": "mutation{createNote(UserId:1,note:\"this is a note\"){id,UserId,note}}"}' http://localhost:2017/graphql
 # requesting a user with its notes via the GraphQL API (nested query)
-curl -i -H "Content-Type:application/json" -H "Authorization: Bearer <token>" -X POST -d '{"query": "{user{id, username, notes{id, note}}}"}'  http://localhost:3333/graphqlhttp://localhost:3333/graphql
+curl -i -H "Content-Type:application/json" -H "Authorization: Bearer <token>" -X POST -d '{"query": "{user{id, username, notes{id, note}}}"}'  http://localhost:2017/graphqlhttp://localhost:2017/graphql
 ```
 
 ## Table of Contents
@@ -315,7 +315,7 @@ api.post('/graphql', GraphHTTP({
 }));
 ```
 
-The entrypoint for our GraphQL API is `http://localhost:3333/graphql`
+The entrypoint for our GraphQL API is `http://localhost:2017/graphql`
 
 ## Models
 
@@ -582,7 +582,7 @@ by default it uses a sqlite databse, if you dont want migrate the db by each sta
 - runs a **nodemon watch task** for the all files in the project root
 - sets the **environment variable** `NODE_ENV` to `development`
 - opens the db connection for `development`
-- starts the server on 127.0.0.1:3333
+- starts the server on 127.0.0.1:2017
 
 ### npm test
 
@@ -599,7 +599,7 @@ This command:
 
 - sets the **environment variable** to `production`
 - opens the db connection for `production`
-- starts the server on 127.0.0.1:3333 or on 127.0.0.1:PORT_ENV
+- starts the server on 127.0.0.1:2017 or on 127.0.0.1:PORT_ENV
 
 Before running on production you have to set the **environment vaiables**:
 
@@ -611,7 +611,7 @@ Before running on production you have to set the **environment vaiables**:
 
 Optional:
 
-- PORT - the port your api on 127.0.0.1, default to 3333
+- PORT - the port your api on 127.0.0.1, default to 2017
 
 ### other commands
 
