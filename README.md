@@ -392,43 +392,33 @@ const UserType = new GraphQLObjectType({
   fields: () => ({
     id: {
       type: GraphQLInt,
-      resolve(user) {
-        return user.id;
-      },
+      resolve: (user) => user.id,
     },
     username: {
       type: GraphQLString,
-      resolve(user) {
-        return user.username;
-      },
+      resolve: (user) => user.username,
     },
     email: {
       type: GraphQLString,
-      resolve(user) {
-        return user.email;
-      },
+      resolve: (user) => user.email,
     },
     notes: {
       type: new GraphQLList(NoteType),
-      resolve(user) {
-        return Note.findAll({
+      resolve: (user) => (
+        Note.findAll({
           where: {
             UserId: user.id,
           },
-        });
-      },
+        })
+      ),
     },
     createdAt: {
       type: GraphQLString,
-      resolve(user) {
-        return user.createdAt;
-      },
+      resolve: (user) => user.createdAt,
     },
     updatedAt: {
       type: GraphQLString,
-      resolve(user) {
-        return user.updatedAt;
-      },
+      resolve: (user) => user.updatedAt,
     },
   }),
 });
