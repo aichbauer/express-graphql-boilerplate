@@ -12,11 +12,9 @@ const GraphHTTP = require('express-graphql');
  * server configuration
  */
 const config = require('../config/');
-const database = require('../config/database');
 const auth = require('./policies/auth.policy');
+const dbService = require('./services/db.service');
 const Schema = require('./controllers/');
-const User = require('./models/User/User');
-const Note = require('./models/Note/Note');
 
 // environment: development, testing, production
 const environment = process.env.NODE_ENV;
@@ -27,6 +25,7 @@ const environment = process.env.NODE_ENV;
 const api = express();
 const server = http.Server(api);
 const mappedRoutes = mapRoutes(config.publicRoutes, 'api/controllers/Auth/');
+const DB = dbService(environment, config.migrate).start();
 
 // secure express app
 api.use(helmet({
@@ -40,68 +39,20 @@ api.use(bodyParser.urlencoded({ extended: false }));
 api.use(bodyParser.json());
 
 // public REST API
-api.use('/rest', mappedRoutes);
+api.use('/rapi', mappedRoutes);
 
 // private GraphQL API
-api.all('/graphql', (req, res, next) => auth(req, res, next));
-api.get('/graphql', GraphHTTP({
+api.all('/gapi', (req, res, next) => auth(req, res, next));
+api.get('/gapi', GraphHTTP({
   schema: Schema,
   pretty: true,
   graphiql: false,
 }));
-api.post('/graphql', GraphHTTP({
+api.post('/gapi', GraphHTTP({
   schema: Schema,
   pretty: true,
   graphiql: false,
 }));
-
-api.get('/user', (req, res) => {
-  User.findAll({}).then((users) => res.status(200).json(users));
-});
-
-api.get('/note', (req, res) => {
-  Note.findAll({}).then((notes) => res.status(200).json(notes));
-});
-
-/**
- * Database
- *
- * uses the database for your environment
- * defined in config/connection.js (development, testing, production)
- *
- * default: drop db for development, keep for production
- * defined in config/index.js (keep)
- */
-const DB = database
-  .authenticate()
-  .then(() => {
-    if (environment === 'development' &&
-      config.keep === false) {
-      return database
-        .drop()
-        .then(() => (
-          database
-            .sync()
-            .then(() => {
-              console.log(`There we go ♕\nStarted in ${environment}\nGladly listening on http://127.0.0.1:${config.port}`);
-              console.log('Connection to the database has been established successfully');
-            })
-            .catch((err) => console.error('Unable to connect to the database:', err))
-        ))
-        .catch((err) => console.error('Unable to connect to the database:', err));
-    }
-
-    // keep data in database after restart
-    return database
-      .sync()
-      .then(() => {
-        console.log(`There we go ♕\nStarted in ${environment}\nGladly listening on http://127.0.0.1:${config.port}`);
-        console.log('Connection to the database has been established successfully');
-      });
-  })
-  .catch((err) => {
-    console.error('Unable to connect to the database:', err);
-  });
 
 server.listen(config.port, () => {
   if (environment !== 'production' &&
