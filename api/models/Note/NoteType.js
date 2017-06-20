@@ -10,33 +10,23 @@ const NoteType = new GraphQLObjectType({
   fields: () => ({
     id: {
       type: GraphQLInt,
-      resolve(note) {
-        return note.id;
-      },
+      resolve: (note) => note.id,
     },
     UserId: {
       type: GraphQLInt,
-      resolve(note) {
-        return note.UserId;
-      },
+      resolve: (note) => note.UserId,
     },
     note: {
       type: GraphQLString,
-      resolve(note) {
-        return note.note;
-      },
+      resolve: (note) => note.note,
     },
     createdAt: {
       type: GraphQLString,
-      resolve(note) {
-        return note.createdAt;
-      },
+      resolve: (note) => note.createdAt,
     },
     updatedAt: {
       type: GraphQLString,
-      resolve(note) {
-        return note.updatedAt;
-      },
+      resolve: (note) => note.createdAt,
     },
   }),
 });
