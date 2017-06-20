@@ -4,30 +4,34 @@
 
 - authentication via [JWT](https://jwt.io/)
 - support for [sqlite](https://www.sqlite.org/), [mysql](https://www.mysql.com/), and [postgresql](https://www.postgresql.org/)
-- support for [graphiql](https://github.com/graphql/graphiql) for easy exploring your GrapgQL API
+- support for [graphiql](https://github.com/graphql/graphiql) an easy way exploring a GrapgQL API
 - environments for `development`, `testing`, and `production`
 - linting via [eslint](https://github.com/eslint/eslint)
-- integration tests running with [AVA](https://github.com/avajs/ava)
+- tests running with [AVA](https://github.com/avajs/ava)
 - built with [npm sripts](#npm-scripts)
-- example with User, Notes, and nested GraphQL queries
+- examples for User, Note, and nested GraphQL queries
 
 ## Quick Intro
 
-GraphQL is a query language where your REST API can co-exists directly beside your GraphQL API in **harmony**. To demonstrate this we have two REST endpoints to `register` and `login` users.
+GraphQL is a query language where your REST API can co-exist directly beside your GraphQL API in **harmony**. To demonstrate this we have two REST endpoints for `register` and `login` users.
 
 ```sh
+# clone repository
+$ git clone https://github.com/aichbauer/express-graphql-boilerplate.git
 # cd into project root
+$ cd express-graphql-boilerplate
+# install dependencies
 $ npm i
 # start application
 $ npm start
-# create a user
+# create a user via the REST API
 curl -H "Content-Type: application/json" -X POST -d '{"username":"user","password":"pw"}' http://localhost:3333/rest/register
-# login a user
+# login a user via the REST API
 # you will get a json with a token and this is your token to get access to the GraphQL API
 curl -H "Content-Type: application/json" -X POST -d '{"username":"user","password":"pw"}' http://localhost:3333/rest/login
 # requesting a user via the GraphQL API
 curl -i -H "Content-Type:application/json" -H "Authorization: Bearer <token>" -X POST -d '{"query": "{user{id, username}}"}'  http://localhost:3333/graphqlhttp://localhost:3333/graphql
-# create a note for a user via the GraphQL API
+# creating a note for a user via the GraphQL API
 curl -i -H "Content-Type:application/json" -H "Authorization: Bearer <token>" -X POST -d '{"query": "mutation{createNote(UserId:1,note:\"this is a note\"){id,UserId,note}}"}' http://localhost:3333/graphql
 # requesting a user with its notes via the GraphQL API (nested query)
 curl -i -H "Content-Type:application/json" -H "Authorization: Bearer <token>" -X POST -d '{"query": "{user{id, username, notes{id, note}}}"}'  http://localhost:3333/graphqlhttp://localhost:3333/graphql
@@ -68,6 +72,8 @@ then
 
 ```sh
 # cd into project root
+$ cd express-graphql-boilerplate
+# install dependencies
 $ yarn
 # to use mysql
 $ yarn add mysql2
@@ -78,11 +84,9 @@ $ yarn add pg pg-hstore
 or
 
 ```sh
-# cd into project root
+$ cd express-graphql-boilerplate
 $ npm i
-# to use mysql
 $ npm i mysql2 -S
-# to use postgresql
 $ npm i pg pg-hstore -S
 ```
 
@@ -90,54 +94,16 @@ sqlite is supported out of the box as it is the default.
 
 ## Folder Structure
 
-This boilerplate has 4 main directories:
+This boilerplate has four main directories:
 
-- api - for controllers, queryies, mutations, models, types, services, etc.
+- api - for controllers, queries, mutations, models, types, services, etc.
 - config - for routes, database, etc.
-- db - this is only a dir for the sqlite db, the default for NODE_ENV development
+- db - this is only a directory for the sqlite db, the default for `NODE_ENV=development`
 - test - using [AVA](https://github.com/avajs/ava)
 
-```sh
-src
-├── api
-│   ├── controllers
-│   │   ├── Auth
-│   │   │   └── AuthController.js
-│   │   ├── Note
-│   │   │   ├── NoteMutation.js
-│   │   │   └── NoteQuery.js
-│   │   ├── User
-│   │   │   ├── UserMutation.js
-│   │   │   └── UserQuery.js
-│   │   └── index.js
-│   ├── models
-│   │   ├── Note
-│   │   │   ├── Note.js
-│   │   │   └── NoteType.js
-│   │   └── User
-│   │       ├── User.js
-│   │       └── UserType.js
-│   ├── policies
-│   │   └── auth.policy.js
-│   ├── services
-│   │   ├── auth.service.js
-│   │   └── bcrypt.service.js
-│   └── api.js
-├── config
-│   ├── connection.js
-│   ├── database.js
-│   ├── index.js
-│   └── routes
-│        ├── privateRoutes.js
-│        └── publicRoutes.js
-├── db
-│   └── database.sqlite
-└── test
-    └── setup
-         └── _setup.js
-```
-
 ## Controllers
+
+This directory 
 
 ### Create a Controller
 
@@ -620,6 +586,8 @@ There are no automation tool or task runner like [grunt](https://gruntjs.com/) o
 ### npm start
 
 This is the entry for a developer. This command:
+
+by default it uses a sqlite databse, if you dont want migrate the db by each start enable the `prestart` and `poststart` command. Also mind if you are using a sqlite database to delete the `drop-sqlite-db` in the prepush hook.
 
 - runs a **nodemon watch task** for the all files in the project root
 - sets the **environment variable** `NODE_ENV` to `development`
