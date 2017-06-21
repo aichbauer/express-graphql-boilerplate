@@ -103,7 +103,9 @@ This boilerplate has four main directories:
 
 ## Controllers
 
-This directory 
+This directory holds all controllers. As a REST Controller does not vary much from a GraphQL Schema, they are also lokated inside of it. A **query** and a **mutation** in `GraphQL` has functions, so called `resolvers` to modify a Model. Just like a Controller in a REST api has functions to modify a model. The difference is that a function on a REST Controller is mapped to one specific route of your api, as if you have a **query** or a **mutation** in `GraphQL` ALL of your functions are mapped to only ONE route. The magic happens under the hood of GraphQL. When you send a query to the server, `GraphQL` takes a look at your query and takes a look at your Schema and only responds with the fields you requested in the query. And this is also the point where you can make `nested queries`, as GraopQL will simply take a look at what your query looks and the types it can use and respond it.
+
+You always have to keep in mind that a **query** and a **mutation** is the complete same for `GraphQL`, it does not differentiate between it until you pass it into `GraphQLSchema`. A Query has arguments, as a Mutation has arguments, you can use this arguements to resolve a function, most likely you would use this arguments to insert something into a database or to get entries from a database.
 
 ### Create a Controller
 
@@ -111,7 +113,7 @@ For an example with all CRUD operations visit the [express-rest-api-boilerplate]
 
 ### Create a Query
 
-> Note you need to have a [Type](#create-a-type), and an existing [Model](#create-a-model) to use Queries!
+> Note you need to have a [Type](#create-a-type), and an existing [Model](#create-a-model) to use Queries in combination with a Database!
 
 Example query for a User which lets you request all different fields which are defined in `args`.
 
@@ -170,7 +172,7 @@ module.exports = userQuery;
 
 ### Create a Mutation
 
-> Note you need to have a [Type](#create-a-type), and an existing [Model](#create-a-model) to use Mutations!
+> Note you need to have a [Type](#create-a-type), and an existing [Model](#create-a-model) to use Mutations in combination with a Database!
 
 Example for User.
 
@@ -211,7 +213,8 @@ const updateUser = {
   // find the User in the DB
   // update the fields for this user
   resolve: (user, { id, username, email }) => (
-    User.findById(id)
+    User
+      .findById(id)
       .then((foundUser) => {
         if (!foundUser) {
           return 'User not found';
@@ -241,9 +244,11 @@ const deleteUser = {
     },
   },
   resolve: (user, { id }) => (
-    User.delete().where({
-      id,
-    })
+    User
+      .delete()
+      .where({
+        id,
+      })
   ),
 };
 
@@ -276,7 +281,7 @@ const RootQuery = new GraphQLObjectType({
   name: 'rootQuery',
   description: 'This is the root query which holds all possible READ entrypoints for the GraphQL API',
   fields: () => ({
-    userQuery,
+    user: userQuery,
   }),
 });
 
@@ -405,11 +410,12 @@ const UserType = new GraphQLObjectType({
     notes: {
       type: new GraphQLList(NoteType),
       resolve: (user) => (
-        Note.findAll({
-          where: {
-            UserId: user.id,
-          },
-        })
+        Note
+          .findAll({
+            where: {
+              UserId: user.id,
+            },
+          })
       ),
     },
     createdAt: {
@@ -480,7 +486,7 @@ app.get('/admin/myroute',
 ## auth.policy
 
 The `auth.policy` checks wether a `JSON Web Token` ([further information](https://jwt.io/)) is send in the header of an request as `Authorization: Bearer [JSON Web Token]` or inside of the body of an request as `token: [JSON Web Token]`.
-The policy runs default on all api routes that are are prefixed with `/private`. To map multiple routes read the [docs](https://github.com/aichbauer/express-routes-mapper/blob/master/README.md) from `express-routes-mapper`.
+The policy runs default on all api routes that are are prefixed with `/graphql`. To map multiple routes read the [docs](https://github.com/aichbauer/express-routes-mapper/blob/master/README.md) from `express-routes-mapper`.
 
 To use this policy on all routes of a specific prefix:
 
@@ -577,7 +583,7 @@ There are no automation tool or task runner like [grunt](https://gruntjs.com/) o
 
 This is the entry for a developer. This command:
 
-by default it uses a sqlite databse, if you dont want migrate the db by each start enable the `prestart` and `poststart` command. Also mind if you are using a sqlite database to delete the `drop-sqlite-db` in the prepush hook.
+By default it uses a sqlite databse, if you want to migrate the sqlite db by each start, disable the `prestart` and `poststart` command. Also mind if you are using a sqlite database to delete the `drop-sqlite-db` in the prepush hook.
 
 - runs a **nodemon watch task** for the all files in the project root
 - sets the **environment variable** `NODE_ENV` to `development`
