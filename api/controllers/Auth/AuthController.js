@@ -6,10 +6,11 @@ const AuthController = () => {
   const register = (req, res) => {
     const body = req.body;
 
-    User.create({
-      username: body.username,
-      password: body.password,
-    })
+    User
+      .create({
+        username: body.username,
+        password: body.password,
+      })
       .then((user) => res.status(200).json({ user }))
       .catch((err) => {
         console.log(err);
@@ -22,11 +23,12 @@ const AuthController = () => {
     const password = req.body.password;
 
     if (username && password) {
-      User.findOne({
-        where: {
-          username,
-        },
-      })
+      User
+        .findOne({
+          where: {
+            username,
+          },
+        })
         .then((user) => {
           if (!user) {
             return res.status(400).json({ msg: 'Bad Request: User not found' });

@@ -27,11 +27,12 @@ const UserType = new GraphQLObjectType({
     notes: {
       type: new GraphQLList(NoteType),
       resolve: (user) => (
-        Note.findAll({
-          where: {
-            UserId: user.id,
-          },
-        })
+        Note
+          .findAll({
+            where: {
+              UserId: user.id,
+            },
+          })
       ),
     },
     createdAt: {

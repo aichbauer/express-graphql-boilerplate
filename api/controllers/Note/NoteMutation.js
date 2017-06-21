@@ -46,7 +46,8 @@ const updateNote = {
     },
   },
   resolve: (value, { id, UserId, note }) => (
-    Note.findById(id)
+    Note
+      .findById(id)
       .then((foundNote) => {
         if (!foundNote) {
           return 'User not found';
@@ -73,9 +74,11 @@ const deleteNote = {
     },
   },
   resolve: (value, { id }) => (
-    Note.delete().where({
-      id,
-    })
+    Note
+      .delete()
+      .where({
+        id,
+      })
   ),
 };
 

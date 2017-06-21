@@ -25,7 +25,8 @@ const updateUser = {
     },
   },
   resolve: (user, { id, username, email }) => (
-    User.findById(id)
+    User
+      .findById(id)
       .then((foundUser) => {
         if (!foundUser) {
           return 'User not found';
@@ -34,10 +35,11 @@ const updateUser = {
         const thisUsername = username !== undefined ? username : foundUser.username;
         const thisEmail = email !== undefined ? email : foundUser.email;
 
-        return foundUser.update({
-          username: thisUsername,
-          email: thisEmail,
-        });
+        return foundUser
+          .update({
+            username: thisUsername,
+            email: thisEmail,
+          });
       })
   ),
 };
@@ -52,9 +54,11 @@ const deleteUser = {
     },
   },
   resolve: (user, { id }) => (
-    User.delete().where({
-      id,
-    })
+    User
+      .delete()
+      .where({
+        id,
+      })
   ),
 };
 

@@ -19,8 +19,8 @@ const RootQuery = new GraphQLObjectType({
   name: 'rootQuery',
   description: 'This is the root query which holds all possible READ entrypoints for the GraphQL API',
   fields: () => ({
-    userQuery,
-    noteQuery,
+    user: userQuery,
+    note: noteQuery,
   }),
 });
 

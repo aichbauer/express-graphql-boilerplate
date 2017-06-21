@@ -39,16 +39,16 @@ api.use(bodyParser.urlencoded({ extended: false }));
 api.use(bodyParser.json());
 
 // public REST API
-api.use('/rapi', mappedRoutes);
+api.use('/rest', mappedRoutes);
 
 // private GraphQL API
-api.all('/gapi', (req, res, next) => auth(req, res, next));
-api.get('/gapi', GraphHTTP({
+api.all('/graphql', (req, res, next) => auth(req, res, next));
+api.get('/graphql', GraphHTTP({
   schema: Schema,
   pretty: true,
   graphiql: false,
 }));
-api.post('/gapi', GraphHTTP({
+api.post('/graphql', GraphHTTP({
   schema: Schema,
   pretty: true,
   graphiql: false,
