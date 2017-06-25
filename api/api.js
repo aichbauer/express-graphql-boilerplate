@@ -7,6 +7,7 @@ const helmet = require('helmet');
 const http = require('http');
 const mapRoutes = require('express-routes-mapper');
 const GraphHTTP = require('express-graphql');
+const cors = require('cors');
 
 /**
  * server configuration
@@ -26,6 +27,10 @@ const api = express();
 const server = http.Server(api);
 const mappedRoutes = mapRoutes(config.publicRoutes, 'api/controllers/Auth/');
 const DB = dbService(environment, config.migrate).start();
+
+// allow cross origin requests
+// configure to allow only requests from certain origins
+api.use(cors());
 
 // secure express app
 api.use(helmet({
