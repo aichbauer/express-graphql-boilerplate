@@ -6,36 +6,45 @@ const AuthController = () => {
   const register = (req, res) => {
     const body = req.body;
 
-    User
-      .create({
-        username: body.username,
+
+    if (body.password === body.password2) {
+      return User.create({
+        email: body.email,
         password: body.password,
       })
-      .then((user) => res.status(200).json({ user }))
-      .catch((err) => {
-        console.log(err);
-        return res.status(500).json({ msg: 'Internal server error' });
-      });
+        .then((user) => {
+          const token = authService.issue({ id: user.id });
+
+          return res.status(200).json({ token, user });
+        })
+        .catch((err) => {
+          console.log(err);
+          return res.status(500).json({ msg: 'Internal server error' });
+        });
+    }
+
+    return res.status(400).json({ msg: 'Passwords don\'t match' });
   };
 
   const login = (req, res) => {
-    const username = req.body.username;
+    const email = req.body.email;
     const password = req.body.password;
 
-    if (username && password) {
-      User
-        .findOne({
-          where: {
-            username,
-          },
-        })
+    if (email && password) {
+      User.findOne({
+        where: {
+          email,
+        },
+      })
         .then((user) => {
           if (!user) {
             return res.status(400).json({ msg: 'Bad Request: User not found' });
           }
 
           if (bcryptService.comparePassword(password, user.password)) {
-            return res.status(200).json({ token: authService.issue({ id: user.id }) });
+            const token = authService.issue({ id: user.id });
+
+            return res.status(200).json({ token, user });
           }
 
           return res.status(401).json({ msg: 'Unauthorized' });
@@ -47,9 +56,22 @@ const AuthController = () => {
     }
   };
 
+  const validate = (req, res) => {
+    const tokenToVerify = req.body.token;
+
+    authService.verify(tokenToVerify, (err) => {
+      if (err) {
+        return res.status(401).json({ isvalid: false, err: 'Invalid Token!' });
+      }
+
+      return res.status(200).json({ isvalid: true });
+    });
+  };
+
   return {
     register,
     login,
+    validate,
   };
 };
 
