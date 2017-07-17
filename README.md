@@ -30,11 +30,11 @@ curl -H "Content-Type: application/json" -X POST -d '{"username":"user","passwor
 # you will get a json with a token and this is your token to get access to the GraphQL API
 curl -H "Content-Type: application/json" -X POST -d '{"username":"user","password":"pw"}' http://localhost:2017/rest/login
 # requesting a user via the GraphQL API
-curl -i -H "Content-Type:application/json" -H "Authorization: Bearer <token>" -X POST -d '{"query": "{user{id, username}}"}'  http://localhost:2017/graphqlhttp://localhost:2017/graphql
+curl -i -H "Content-Type:application/json" -H "Authorization: Bearer <token>" -X POST -d '{"query": "{user{id, username}}"}'  http://localhost:2017/graphql
 # creating a note for a user via the GraphQL API
 curl -i -H "Content-Type:application/json" -H "Authorization: Bearer <token>" -X POST -d '{"query": "mutation{createNote(UserId:1,note:\"this is a note\"){id,UserId,note}}"}' http://localhost:2017/graphql
 # requesting a user with its notes via the GraphQL API (nested query)
-curl -i -H "Content-Type:application/json" -H "Authorization: Bearer <token>" -X POST -d '{"query": "{user{id, username, notes{id, note}}}"}'  http://localhost:2017/graphqlhttp://localhost:2017/graphql
+curl -i -H "Content-Type:application/json" -H "Authorization: Bearer <token>" -X POST -d '{"query": "{user{id, username, notes{id, note}}}"}'  http://localhost:2017/graphql
 ```
 
 ## Table of Contents
@@ -434,7 +434,7 @@ module.exports = UserType;
 
 ## Policies
 
-Policies are middleware functions that can run before hitting a apecific or more specified route(s).
+Policies are middleware functions that can run before hitting a specific or more specified route(s).
 
 Example policy:
 
@@ -486,7 +486,7 @@ app.get('/admin/myroute',
 ## auth.policy
 
 The `auth.policy` checks wether a `JSON Web Token` ([further information](https://jwt.io/)) is send in the header of an request as `Authorization: Bearer [JSON Web Token]` or inside of the body of an request as `token: [JSON Web Token]`.
-The policy runs default on all api routes that are are prefixed with `/graphql`. To map multiple routes read the [docs](https://github.com/aichbauer/express-routes-mapper/blob/master/README.md) from `express-routes-mapper`.
+The policy runs default on all api routes that are are prefixed with `/graphql`. To map multiple routes read the [express-routes-mapper docs](https://github.com/aichbauer/express-routes-mapper/blob/master/README.md).
 
 To use this policy on all routes of a specific prefix:
 
@@ -613,7 +613,7 @@ Before running on production you have to set the **environment vaiables**:
 - DB_USER - database username for production
 - DB_PASS - database password for production
 - DB_HOST - database host for production
-- JWT_SECERT - secret for json web token
+- JWT_SECRET - secret for json web token
 
 Optional:
 
@@ -621,11 +621,11 @@ Optional:
 
 ### other commands
 
-- `npm run dev` - simply start the server withou a watcher
+- `npm run dev` - simply start the server without a watcher
 - `npm run creates-sqlite-db` - creates the sqlite database file
 - `npm run drop-sqlite-db` - deletes the sqlite database file
 - `npm run lint` - linting with [eslint](http://eslint.org/)
-- `npm run nodemon` - same as `npm start``
+- `npm run nodemon` - same as `npm start`
 - `npm run prepush` - a hook wich runs before pushing to a repository, runs `npm test` and `npm run drop-sqlite-db`
 - `pretest` - runs linting before `npm test`
 - `test-ci` - only runs tests, nothing in pretest, nothing in posttest, for better use with ci tools
