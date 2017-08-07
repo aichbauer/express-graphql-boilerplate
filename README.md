@@ -572,7 +572,7 @@ Here you define all your routes for your API. It doesn't matter how you structur
 
 ## Test
 
-All tests for this boilerplate uses [AVA](https://github.com/avajs/ava) and [supertest](https://github.com/visionmedia/superagent for integration testing. So read their docs on further information.
+All tests for this boilerplate uses [AVA](https://github.com/avajs/ava) and [supertest](https://github.com/visionmedia/superagent) for integration testing. So read their docs on further information.
 
 ## npm scripts
 
