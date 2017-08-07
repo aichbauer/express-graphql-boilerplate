@@ -9,11 +9,11 @@
 - linting via [eslint](https://github.com/eslint/eslint)
 - tests running with [AVA](https://github.com/avajs/ava)
 - built with [npm sripts](#npm-scripts)
-- examples for User, Note, and nested GraphQL queries
+- examples for User, Note, and nested GraphQL Queries
 
 ## Quick Intro
 
-GraphQL is a query language where your REST API can co-exist directly beside your GraphQL API in **harmony**. To demonstrate this we have two REST endpoints for `register` and `login` users.
+GraphQL is a Query Language where your REST API can co-exist directly beside your GraphQL API in **harmony**. To demonstrate this we have two REST endpoints for `register` and `login`.
 
 ```sh
 # clone repository
@@ -24,16 +24,16 @@ $ cd express-graphql-boilerplate
 $ npm i
 # start application
 $ npm start
-# create a user via the REST API
+# create a User via the REST API
 curl -H "Content-Type: application/json" -X POST -d '{"username":"user","password":"pw"}' http://localhost:2017/rest/register
-# login a user via the REST API
-# you will get a json with a token and this is your token to get access to the GraphQL API
+# login a User via the REST API
+# you will get a JSON with a token and this is your token to get access to the GraphQL API
 curl -H "Content-Type: application/json" -X POST -d '{"username":"user","password":"pw"}' http://localhost:2017/rest/login
-# requesting a user via the GraphQL API
+# requesting a User via the GraphQL API
 curl -i -H "Content-Type:application/json" -H "Authorization: Bearer <token>" -X POST -d '{"query": "{user{id, username}}"}'  http://localhost:2017/graphql
-# creating a note for a user via the GraphQL API
+# creating a Note for a user via the GraphQL API
 curl -i -H "Content-Type:application/json" -H "Authorization: Bearer <token>" -X POST -d '{"query": "mutation{createNote(UserId:1,note:\"this is a note\"){id,UserId,note}}"}' http://localhost:2017/graphql
-# requesting a user with its notes via the GraphQL API (nested query)
+# requesting a User with its Notes via the GraphQL API (nested Query)
 curl -i -H "Content-Type:application/json" -H "Authorization: Bearer <token>" -X POST -d '{"query": "{user{id, username, notes{id, note}}}"}'  http://localhost:2017/graphql
 ```
 
@@ -96,16 +96,16 @@ sqlite is supported out of the box as it is the default.
 
 This boilerplate has four main directories:
 
-- api - for controllers, queries, mutations, models, types, services, etc.
+- api - for Controllers, Queries, Mutations, Models, Types, Services, etc.
 - config - for routes, database, etc.
-- db - this is only a directory for the sqlite db, the default for `NODE_ENV=development`
+- db - this is only a directory for the sqlite database, the default for `NODE_ENV=development`
 - test - using [AVA](https://github.com/avajs/ava)
 
 ## Controllers
 
-This directory holds all controllers. As a REST Controller does not vary much from a GraphQL Schema, they are also lokated inside of it. A **query** and a **mutation** in `GraphQL` has functions, so called `resolvers` to modify a Model. Just like a Controller in a REST api has functions to modify a model. The difference is that a function on a REST Controller is mapped to one specific route of your api, as if you have a **query** or a **mutation** in `GraphQL` ALL of your functions are mapped to only ONE route. The magic happens under the hood of GraphQL. When you send a query to the server, `GraphQL` takes a look at your query and takes a look at your Schema and only responds with the fields you requested in the query. And this is also the point where you can make `nested queries`, as GraopQL will simply take a look at what your query looks and the types it can use and respond it.
+This directory holds all Controllers. As a REST Controller does not vary much from a GraphQL Schema, they are also located inside of it. A **Query** and a **Mutation** in GraphQL has functions, so called **Resolvers** to modify a Model. Just like a **Controller** in a REST API has functions to modify a Model. The difference is that a function on a REST Controller is mapped to one specific route of your API, as if you have a **Query** or a **Mutation** in GraphQL all of your functions are mapped to only one route. The magic happens under the hood of GraphQL. When you send a **Query** to the server, GraphQL takes a look at your Query and takes a look at your Schema and only responds with the fields you requested in the Query. And this is also the point where you can make **nested Queries**, as GraphQL will simply take a look at what your **Query** looks like and the types it can use and responds with it.
 
-You always have to keep in mind that a **query** and a **mutation** is the complete same for `GraphQL`, it does not differentiate between it until you pass it into `GraphQLSchema`. A Query has arguments, as a Mutation has arguments, you can use this arguements to resolve a function, most likely you would use this arguments to insert something into a database or to get entries from a database.
+You always have to keep in mind that a **Query** and a **Mutation** is the complete same for GraphQL, it does not differentiate between it until you pass it into `GraphQLSchema`. A **Query** has arguments, as a **Mutation** has arguments, you can use this arguments to resolve a function, most likely you would use this arguments to insert something into a database or to get entries from a database.
 
 ### Create a Controller
 
@@ -113,9 +113,9 @@ For an example with all CRUD operations visit the [express-rest-api-boilerplate]
 
 ### Create a Query
 
-> Note you need to have a [Type](#create-a-type), and an existing [Model](#create-a-model) to use Queries in combination with a Database!
+> Note: You need to have a [Type](#create-a-type), and an existing [Model](#create-a-model) to use **Queries** in combination with a database!
 
-Example query for a User which lets you request all different fields which are defined in `args`.
+Example **Query** for a User which lets you request all different fields which are defined in `args`.
 
 ```js
 // import the reuired GraphQL Types
@@ -125,18 +125,18 @@ const {
   GraphQLList,
 } = require('graphql');
 
-// import the model and the type
+// import the Model and the Type
 const UserType = require('../../models/User/UserType');
 const User = require('../../models/User/User');
 
-// create the query
+// create the Query
 const userQuery = {
-  type: new GraphQLList(UserType), // the type which it returns (an array of users)
+  type: new GraphQLList(UserType), // the Type which it returns (an array of Users)
   args: {
-    // arguements you are able to query
+    // arguments you are able to Query
     // notice no password field
-    // so password will send as respond
-    // neither can you query for it
+    // so the password will not be send as respond
+    // neither can you Query for it
     id: {
       name: 'id',
       type: GraphQLInt,
@@ -172,31 +172,29 @@ module.exports = userQuery;
 
 ### Create a Mutation
 
-> Note you need to have a [Type](#create-a-type), and an existing [Model](#create-a-model) to use Mutations in combination with a Database!
-
-Example for User.
+> Note: You need to have a [Type](#create-a-type), and an existing [Model](#create-a-model) to use **Mutations** in combination with a database!
 
 ```js
-// import the required GraphQL types
+// import the required GraphQL Types
 const {
   GraphQLString,
   GraphQLInt,
   GraphQLNonNull,
 } = require('graphql');
 
-// import model and type
+// import Model and Type
 const UserType = require('../../models/User/UserType');
 const User = require('../../models/User/User');
 
-// the update mutation
+// the update Mutation
 const updateUser = {
-  // the respond type
+  // the respond Type
   type: UserType,
-  description: 'The mutation that allows you to update an existing User by Id',
+  description: 'The Mutation that allows you to update an existing User by Id',
   args: {
-    // arguements you can use
-    // have to be fields
-    // that are resolvable by the UserType
+    // arguments you can use
+    // have to be fields that are
+    // resolvable by the UserType
     id: {
       name: 'id',
       type: new GraphQLNonNull(GraphQLInt),
@@ -231,11 +229,11 @@ const updateUser = {
   ),
 };
 
-// the update mutation
+// the update Mutation
 const deleteUser = {
-  // the respond type
+  // the respond Type
   type: UserType,
-  description: 'The mutation that allows you to delete a existing User by Id',
+  description: 'The Mutation that allows you to delete a existing User by Id',
   // arguments you can use
   args: {
     id: {
@@ -260,42 +258,42 @@ module.exports = {
 
 ## RootQuery and Schema
 
-The Schema holds the RootQuery and the RootMutation which holds all the other Queries and Mutations, that is applied to one route which is your entrypoint for your GraphQL API. The Schema has to be exported and used in the `./api/api.js`
+The Schema holds the RootQuery and the RootMutation which holds all the other Queries and Mutations, that is applied to one route which is your entrypoint for your GraphQL API. The Schema has to be exported and used in the `./api/api.js` file.
 
 ```js
-// import required GraphQL types
+// import required GraphQL Types
 const {
   GraphQLSchema,
   GraphQLObjectType,
 } = require('graphql');
 
-// import query and mutations
+// import Query and Mutations
 const userQuery = require('./User/UserQuery');
 const {
   updateUser,
   deleteUser,
 } = require('./User/UserMutation');
 
-// add queries to root query
+// add Queries to RootQuery
 const RootQuery = new GraphQLObjectType({
   name: 'rootQuery',
-  description: 'This is the root query which holds all possible READ entrypoints for the GraphQL API',
+  description: 'This is the RootQuery which holds all possible READ entrypoints for the GraphQL API',
   fields: () => ({
     user: userQuery,
   }),
 });
 
-// add mutations to root mutations
+// add Mutations to RootMutations
 const RootMutation = new GraphQLObjectType({
   name: 'rootMutation',
-  description: 'This is the root mutation which holds all possible WRITE entrypoints for the GraphQL API',
+  description: 'This is the root Mutation which holds all possible WRITE entrypoints for the GraphQL API',
   fields: () => ({
     updateUser,
     deleteUser,
   }),
 });
 
-// add root query and root mutation
+// add RootQuery and RootMutation
 // to your Schema
 const Schema = new GraphQLSchema({
   query: RootQuery,
@@ -305,8 +303,9 @@ const Schema = new GraphQLSchema({
 module.exports = Schema;
 ```
 
-To use the this Schema for your API we need to add id to a route.
-If we set graphiql to `true` we get a nice webinterface to test our graphql queries.
+To use the this Schema for your API we need to add it to a route.
+If we set graphiql to `true` we get a nice webinterface to test our GraphQL Queries.
+
 ```js
 api.get('/graphql', GraphHTTP({
   schema: Schema,
@@ -326,7 +325,7 @@ The entrypoint for our GraphQL API is `http://localhost:2017/graphql`
 
 ### Create a Model
 
-Controllers in this boilerplate have a naming convention: `Model.js` and uses [Sequelize](http://docs.sequelizejs.com/) to define our Models, if you want further information read the [Docs](http://docs.sequelizejs.com/).
+Controllers in this boilerplate have a naming convention: `Model.js` and uses [Sequelize](http://docs.sequelizejs.com/) to define our Models, if you want further information, read the [Docs](http://docs.sequelizejs.com/).
 
 Example User Model:
 
@@ -346,7 +345,7 @@ const hooks = {
   },
 };
 
-// instanceMethods are functions that run on instances of our model
+// instanceMethods are functions that run on instances of our Model
 // toJSON runs before delivering it to our client
 // we delete the password, that the client has no sensitive data
 const instanceMethods = {
@@ -359,10 +358,10 @@ const instanceMethods = {
   },
 };
 
-// naming the table in DB
+// naming the table in the DB
 const tableName = 'users';
 
-// the actual model
+// the actual Model
 const User = sequelize.define('User', {
   username: {
     type: Sequelize.STRING,
@@ -378,7 +377,7 @@ module.exports = User;
 
 ### Create a Type
 
-Types are necessary to let graphql know, how to resolve to different fields you provide in your queries.
+Types are necessary to let GraphQL know, how to resolve the different fields you provide in your Queries.
 
 ```js
 const {
@@ -466,7 +465,7 @@ api.js
 ```js
 const adminPolicy = require('./policies/admin.policy');
 
-app.all('/admin/*', (req,res,next) => adminPolicy(req,res,next));
+app.all('/admin/*', (req, res, next) => adminPolicy(req, res, next));
 ```
 
 Or for one specific route
@@ -477,16 +476,16 @@ api.js
 const adminPolicy = require('./policies/admin.policy');
 
 app.get('/admin/myroute',
-  (req,res,next) => adminPolicy(req,res,next),
-  (req,res) => {
+  (req, res, next) => adminPolicy(req, res, next),
+  (req, res) => {
   //do some fancy stuff
 });
 ```
 
 ## auth.policy
 
-The `auth.policy` checks wether a `JSON Web Token` ([further information](https://jwt.io/)) is send in the header of an request as `Authorization: Bearer [JSON Web Token]` or inside of the body of an request as `token: [JSON Web Token]`.
-The policy runs default on all api routes that are are prefixed with `/graphql`. To map multiple routes read the [express-routes-mapper docs](https://github.com/aichbauer/express-routes-mapper/blob/master/README.md).
+The `auth.policy` checks wether a [JSON Web Token](https://jwt.io/) is send in the header of an request as `Authorization: Bearer [JSON Web Token]` or inside of the body of an request as `token: [JSON Web Token]`.
+The policy runs default on all API routes that are are prefixed with `/graphql`. To map multiple routes read the [express-routes-mapper docs](https://github.com/aichbauer/express-routes-mapper/blob/master/README.md).
 
 To use this policy on all routes of a specific prefix:
 
@@ -537,17 +536,17 @@ Holds all the server configurations.
 
 ## Connection and Database
 
-> Note: if you use mysql make sure mysql server is running on the machine
+> Note: If you use mysql make sure mysql server is running on the machine
 
-> Note: if you use postgresql make sure postgresql server is running on the machine
+> Note: If you use postgresql make sure postgresql server is running on the machine
 
 This two files are the way to establish a connaction to a database.
 
 You only need to touch connection.js, default for `development` is sqlite, but it is easy as typing `mysql` or `postgres` to switch to another db.
 
-> Note: to run a mysql db install these package with: `yarn add mysql2` or `npm i mysql2 -S`
+> Note: To run a mysql db install these package with: `yarn add mysql2` or `npm i mysql2 -S`
 
-> Note: to run a postgres db run these package with: `yarn add pg pg-hstore` or `npm i -S pg pg-hstore`
+> Note: To run a postgres db run these package with: `yarn add pg pg-hstore` or `npm i -S pg pg-hstore`
 
 Now simple configure the keys with your credentials.
 
@@ -563,27 +562,27 @@ Now simple configure the keys with your credentials.
 
 To not configure the production code.
 
-To start the DB, add the credentials for production. add `environment variables` by typing e.g. `export DB_USER=yourusername` before starting the api.
+To start the DB, add the credentials for production. Add `environment variables` by typing e.g. `export DB_USER=yourusername` before starting the API.
 
 ## Routes
 
 > For an example REST API with routes visit [express-rest-api-boilerplate](https://www.github.com/aichbauer/express-rest-api-boilerplate)
 
-Here you define all your routes for your api. It doesn't matter how you structure them. By default they are mapped on `privateRoutes` and `publicRoutes`. You can define as much routes files as you want e.g. for every model or for specific use cases, e.g. normal user and admins.
+Here you define all your routes for your API. It doesn't matter how you structure them. By default they are mapped on `privateRoutes` and `publicRoutes`. You can define as much routes files as you want e.g. for every Model or for specific use cases, e.g. normal user and admins.
 
 ## Test
 
-All test for this boilerplate uses [AVA](https://github.com/avajs/ava) and [supertest](https://github.com/visionmedia/superagent) for integration testing. So read their docs on further information.
+All tests for this boilerplate uses [AVA](https://github.com/avajs/ava) and [supertest](https://github.com/visionmedia/superagent for integration testing. So read their docs on further information.
 
 ## npm scripts
 
-There are no automation tool or task runner like [grunt](https://gruntjs.com/) or [gulp](http://gulpjs.com/) used for this boilerplate. These boilerplate only uses npm scripts for automatization.
+There are no automation tools or task runners like [grunt](https://gruntjs.com/) or [gulp](http://gulpjs.com/) used for this boilerplate. This boilerplate only uses npm scripts for automatization.
 
 ### npm start
 
-This is the entry for a developer. This command:
+This is the entry for a developer.
 
-By default it uses a sqlite databse, if you want to migrate the sqlite db by each start, disable the `prestart` and `poststart` command. Also mind if you are using a sqlite database to delete the `drop-sqlite-db` in the prepush hook.
+By default it uses a sqlite databse, if you want to migrate the sqlite database by each start, disable the `prestart` and `poststart` command. Also mind if you are using a sqlite database to delete the `drop-sqlite-db` in the prepush hook.
 
 - runs a **nodemon watch task** for the all files in the project root
 - sets the **environment variable** `NODE_ENV` to `development`
@@ -617,11 +616,11 @@ Before running on production you have to set the **environment vaiables**:
 
 Optional:
 
-- PORT - the port your api on 127.0.0.1, default to 2017
+- PORT - the port your API on 127.0.0.1, default to 2017
 
 ### other commands
 
-- `npm run dev` - simply start the server without a watcher
+- `npm run dev` - simply starts the server without a watch task
 - `npm run creates-sqlite-db` - creates the sqlite database file
 - `npm run drop-sqlite-db` - deletes the sqlite database file
 - `npm run lint` - linting with [eslint](http://eslint.org/)
@@ -633,4 +632,3 @@ Optional:
 ## LICENSE
 
 MIT © Lukas Aichbauer
-
