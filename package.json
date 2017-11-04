@@ -12,17 +12,17 @@
     "url": "https://github.com/aichbauer/express-rest-api-boilerplate/issues"
   },
   "scripts": {
-    "dev": "export NODE_ENV=development && node ./api/api.js",
-    "create-sqlite-db": "touch ./db/database.sqlite",
-    "drop-sqlite-db": "rm ./db/database.sqlite",
+    "dev": "cross-env NODE_ENV=development && node ./api/api.js",
+    "create-sqlite-db": "shx touch ./db/database.sqlite",
+    "drop-sqlite-db": "shx rm ./db/database.sqlite",
     "lint": "eslint ./api/. ./config/. ./test/.",
     "prestart": "npm run create-sqlite-db",
     "start": "npm run nodemon",
     "nodemon": "nodemon --exec npm run dev",
     "prepush": "npm test; npm run drop-sqlite-db; npm run create-sqlite-db",
     "pretest": "npm run lint",
-    "production": "export NODE_ENV=production && node ./api/api.js",
-    "test": "export NODE_ENV=testing && nyc ava",
+    "production": "cross-env NODE_ENV=production && node ./api/api.js",
+    "test": "cross-env NODE_ENV=testing && nyc ava",
     "test-ci": "nyc ava --no-color"
   },
   "babel": {
@@ -61,9 +61,11 @@
   },
   "devDependencies": {
     "ava": "^0.19.1",
+    "cross-env": "^5.1.1",
     "eslint": "^3.19.0",
     "eslint-config-airbnb-base": "^11.2.0",
     "eslint-plugin-import": "^2.3.0",
-    "husky": "^0.13.4"
+    "husky": "^0.13.4",
+    "shx": "^0.2.2"
   }
 }
