@@ -3,6 +3,7 @@ const {
   GraphQLInt,
   GraphQLNonNull,
 } = require('graphql');
+const merge = require('lodash.merge');
 
 const NoteType = require('../../models/Note/NoteType');
 const Note = require('../../models/Note/Note');
@@ -36,8 +37,8 @@ const updateNote = {
       name: 'id',
       type: new GraphQLNonNull(GraphQLInt),
     },
-    UserId: {
-      name: 'UserId',
+    userId: {
+      name: 'userId',
       type: new GraphQLNonNull(GraphQLInt),
     },
     note: {
@@ -45,23 +46,20 @@ const updateNote = {
       type: GraphQLString,
     },
   },
-  resolve: (value, { id, UserId, note }) => (
-    Note
-      .findById(id)
-      .then((foundNote) => {
-        if (!foundNote) {
-          return 'User not found';
-        }
+  resolve: async (value, { id, userId, note }) => {
+    const foundNote = await Note.findById(id);
 
-        const thisUserid = UserId !== undefined ? UserId : foundNote.userid;
-        const thisNote = note !== undefined ? note : foundNote.note;
+    if (!foundNote) {
+      throw new Error('Note not found');
+    }
 
-        return foundNote.update({
-          UserId: thisUserid,
-          note: thisNote,
-        });
-      })
-  ),
+    const updatedNote = merge(foundNote, {
+      userId,
+      note,
+    });
+
+    return foundNote.update(updatedNote);
+  },
 };
 
 const deleteNote = {
