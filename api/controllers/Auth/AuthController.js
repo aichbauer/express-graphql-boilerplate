@@ -4,7 +4,7 @@ const bcryptService = require('../../services/bcrypt.service');
 
 const AuthController = () => {
   const register = (req, res) => {
-    const body = req.body;
+    const { body } = req;
 
 
     if (body.password === body.password2) {
@@ -27,8 +27,7 @@ const AuthController = () => {
   };
 
   const login = (req, res) => {
-    const email = req.body.email;
-    const password = req.body.password;
+    const { email, password } = req.body;
 
     if (email && password) {
       User.findOne({
