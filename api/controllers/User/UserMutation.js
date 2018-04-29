@@ -3,6 +3,7 @@ const {
   GraphQLInt,
   GraphQLNonNull,
 } = require('graphql');
+const merge = require('lodash.merge');
 
 const UserType = require('../../models/User/UserType');
 const User = require('../../models/User/User');
@@ -24,24 +25,20 @@ const updateUser = {
       type: GraphQLString,
     },
   },
-  resolve: (user, { id, username, email }) => (
-    User
-      .findById(id)
-      .then((foundUser) => {
-        if (!foundUser) {
-          return 'User not found';
-        }
+  resolve: async (user, { id, username, email }) => {
+    const foundUser = await User.findById(id);
 
-        const thisUsername = username !== undefined ? username : foundUser.username;
-        const thisEmail = email !== undefined ? email : foundUser.email;
+    if (!foundUser) {
+      throw new Error('User not found');
+    }
 
-        return foundUser
-          .update({
-            username: thisUsername,
-            email: thisEmail,
-          });
-      })
-  ),
+    const updatedUser = merge(foundUser, {
+      username,
+      email,
+    });
+
+    return foundUser.update(updatedUser);
+  },
 };
 
 const deleteUser = {

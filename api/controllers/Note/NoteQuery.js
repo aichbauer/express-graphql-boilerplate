@@ -14,8 +14,8 @@ const noteQuery = {
       name: 'id',
       type: GraphQLInt,
     },
-    UserId: {
-      name: 'UserId',
+    userId: {
+      name: 'userId',
       type: GraphQLInt,
     },
     note: {

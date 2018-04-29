@@ -30,7 +30,7 @@ const UserType = new GraphQLObjectType({
         Note
           .findAll({
             where: {
-              UserId: user.id,
+              userId: user.id,
             },
           })
       ),
