@@ -2,12 +2,12 @@
  * third party libraries
  */
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const express = require('express');
+const { graphqlExpress } = require('apollo-server-express');
 const helmet = require('helmet');
 const http = require('http');
 const mapRoutes = require('express-routes-mapper');
-const GraphHTTP = require('express-graphql');
-const cors = require('cors');
 
 /**
  * server configuration
@@ -15,7 +15,7 @@ const cors = require('cors');
 const config = require('../config/');
 const auth = require('./policies/auth.policy');
 const dbService = require('./services/db.service');
-const Schema = require('./controllers/');
+const schema = require('./controllers/');
 
 // environment: development, testing, production
 const environment = process.env.NODE_ENV;
@@ -48,16 +48,7 @@ api.use('/rest', mappedRoutes);
 
 // private GraphQL API
 api.all('/graphql', (req, res, next) => auth(req, res, next));
-api.get('/graphql', GraphHTTP({
-  schema: Schema,
-  pretty: true,
-  graphiql: false,
-}));
-api.post('/graphql', GraphHTTP({
-  schema: Schema,
-  pretty: true,
-  graphiql: false,
-}));
+api.use('/graphql', bodyParser.json(), graphqlExpress({ schema }));
 
 server.listen(config.port, () => {
   if (environment !== 'production' &&

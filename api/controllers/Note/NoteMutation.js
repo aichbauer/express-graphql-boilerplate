@@ -12,8 +12,8 @@ const createNote = {
   type: NoteType,
   description: 'The mutation that allows you to create a new Note',
   args: {
-    UserId: {
-      name: 'UserId',
+    userId: {
+      name: 'userId',
       type: new GraphQLNonNull(GraphQLInt),
     },
     note: {
@@ -21,9 +21,9 @@ const createNote = {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (value, { UserId, note }) => (
+  resolve: (value, { userId, note }) => (
     Note.create({
-      UserId,
+      userId,
       note,
     })
   ),
