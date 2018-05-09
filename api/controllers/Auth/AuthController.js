@@ -16,7 +16,7 @@ const AuthController = () => {
           email,
           password,
         });
-        const token = authService.issue({ id: user.id });
+        const token = authService().issue({ id: user.id });
 
         return res.status(200).json({ token, user });
       } catch (err) {
@@ -43,8 +43,8 @@ const AuthController = () => {
           return res.status(400).json({ msg: 'Bad Request: User not found' });
         }
 
-        if (bcryptService.comparePassword(password, user.password)) {
-          const token = authService.issue({ id: user.id });
+        if (bcryptService().comparePassword(password, user.password)) {
+          const token = authService().issue({ id: user.id });
 
           return res.status(200).json({ token, user });
         }
@@ -63,7 +63,7 @@ const AuthController = () => {
     const tokenToVerify = req.body.token;
 
     try {
-      const err = authService.verify(tokenToVerify);
+      const err = authService().verify(tokenToVerify);
 
       if (err) {
         return res.status(401).json({ isvalid: false, err: 'Unauthorized: Invalid Token' });

@@ -6,7 +6,7 @@ const Note = require('../Note/Note');
 
 const hooks = {
   beforeCreate(user) {
-    user.password = bcryptSevice.password(user); // eslint-disable-line no-param-reassign
+    user.password = bcryptSevice().password(user); // eslint-disable-line no-param-reassign
   },
 };
 
@@ -34,6 +34,6 @@ User.prototype.toJSON = function () {
   return values;
 };
 
-User.hasMany(Note, { as: 'notes' });
+User.hasMany(Note, { as: 'notes', foreignKey: 'userId' });
 
 module.exports = User;

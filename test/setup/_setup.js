@@ -1,7 +1,7 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const mapRoutes = require('express-routes-mapper');
-const GraphHTTP = require('express-graphql');
+const { graphqlExpress } = require('apollo-server-express');
 
 const config = require('../../config/');
 const database = require('../../config/database');
@@ -22,12 +22,12 @@ const beforeAction = async () => {
 
   // private GraphQL API
   testapp.all('/graphql', (req, res, next) => auth(req, res, next));
-  testapp.get('/graphql', GraphHTTP({
+  testapp.get('/graphql', graphqlExpress({
     schema: Schema,
     pretty: true,
     graphiql: false,
   }));
-  testapp.post('/graphql', GraphHTTP({
+  testapp.post('/graphql', graphqlExpress({
     schema: Schema,
     pretty: true,
     graphiql: false,
@@ -45,4 +45,7 @@ const afterAction = async () => {
 };
 
 
-module.exports = { beforeAction, afterAction };
+module.exports = {
+  beforeAction,
+  afterAction,
+};
