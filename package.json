@@ -50,6 +50,7 @@
     "express": "^4.16.3",
     "express-routes-mapper": "^1.0.2",
     "graphql": "^0.13.2",
+    "graphql-playground-middleware-express": "^1.6.2",
     "helmet": "^3.12.0",
     "jsonwebtoken": "^8.2.1",
     "lodash.merge": "^4.6.1",
