@@ -8,6 +8,7 @@ const { graphqlExpress } = require('apollo-server-express');
 const helmet = require('helmet');
 const http = require('http');
 const mapRoutes = require('express-routes-mapper');
+const expressPlayground = require('graphql-playground-middleware-express').default;
 
 /**
  * server configuration
@@ -49,6 +50,8 @@ api.use('/rest', mappedRoutes);
 // private GraphQL API
 api.all('/graphql', (req, res, next) => auth(req, res, next));
 api.use('/graphql', bodyParser.json(), graphqlExpress({ schema }));
+
+api.get('/explore', expressPlayground({ endpoint: '/graphql' }));
 
 server.listen(config.port, () => {
   if (environment !== 'production' &&
