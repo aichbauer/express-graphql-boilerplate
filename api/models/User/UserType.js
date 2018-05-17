@@ -6,7 +6,6 @@ const {
 } = require('graphql');
 
 const NoteType = require('../Note/NoteType');
-const Note = require('../Note/Note');
 
 const UserType = new GraphQLObjectType({
   name: 'User',
