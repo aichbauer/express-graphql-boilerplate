@@ -49,7 +49,7 @@ api.use('/rest', mappedRoutes);
 
 // private GraphQL API
 api.all('/graphql', (req, res, next) => auth(req, res, next));
-api.use('/graphql', bodyParser.json(), graphqlExpress({ schema }));
+api.use('/graphql', bodyParser.json(), graphqlExpress({ schema, cacheControl: true }));
 
 api.get('/explore', expressPlayground({ endpoint: '/graphql' }));
 
