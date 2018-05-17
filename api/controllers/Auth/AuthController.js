@@ -60,20 +60,15 @@ const AuthController = () => {
   };
 
   const validate = (req, res) => {
-    const tokenToVerify = req.body.token;
+    const { token } = req.body;
 
-    try {
-      const err = authService().verify(tokenToVerify);
-
+    authService().verify(token, (err) => {
       if (err) {
-        return res.status(401).json({ isvalid: false, err: 'Unauthorized: Invalid Token' });
+        return res.status(401).json({ isvalid: false, err: 'Invalid Token!' });
       }
 
       return res.status(200).json({ isvalid: true });
-    } catch (err) {
-      console.log(err);
-      return res.status(500).json({ msg: 'Internal server error' });
-    }
+    });
   };
 
   return {
