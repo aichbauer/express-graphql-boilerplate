@@ -303,20 +303,15 @@ const Schema = new GraphQLSchema({
 module.exports = Schema;
 ```
 
-To use the this Schema for your API we need to add it to a route.
-If we set graphiql to `true` we get a nice webinterface to test our GraphQL Queries.
+To use the this Schema for your API we need to add it to a route, as you can see we use our auth service
+to protect our GraphQL API to be used without authorization via a valid JSON Web Token.
+We get a nice web interface for our GraphQL API via the `graphql-playground-middleware-express` package.
+You can use it if you visit `http://localhost:2017/explore`. If you want to use it in production you should make sure only you have access to `/explore`.
 
 ```js
-api.get('/graphql', GraphHTTP({
-  schema: Schema,
-  pretty: true,
-  graphiql: false,
-}));
-api.post('/graphql', GraphHTTP({
-  schema: Schema,
-  pretty: true,
-  graphiql: false,
-}));
+api.all('/graphql', (req, res, next) => auth(req, res, next));
+api.use('/graphql', bodyParser.json(), graphqlExpress({ schema }));
+api.get('/explore', expressPlayground({ endpoint: '/graphql' }));
 ```
 
 The entrypoint for our GraphQL API is `http://localhost:2017/graphql`
