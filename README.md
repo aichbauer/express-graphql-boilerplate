@@ -7,7 +7,7 @@
 - support for [graphiql](https://github.com/graphql/graphiql) an easy way exploring a GrapgQL API
 - environments for `development`, `testing`, and `production`
 - linting via [eslint](https://github.com/eslint/eslint)
-- tests running with [AVA](https://github.com/avajs/ava)
+- integration tests running with [Jest](https://github.com/facebook/jest)
 - built with [npm sripts](#npm-scripts)
 - examples for User, Note, and nested GraphQL Queries
 
@@ -99,7 +99,7 @@ This boilerplate has four main directories:
 - api - for Controllers, Queries, Mutations, Models, Types, Services, etc.
 - config - for routes, database, etc.
 - db - this is only a directory for the sqlite database, the default for `NODE_ENV=development`
-- test - using [AVA](https://github.com/avajs/ava)
+- test - using [Jest](https://github.com/facebook/jest)
 
 ## Controllers
 
@@ -567,7 +567,7 @@ Here you define all your routes for your API. It doesn't matter how you structur
 
 ## Test
 
-All tests for this boilerplate uses [AVA](https://github.com/avajs/ava) and [supertest](https://github.com/visionmedia/superagent) for integration testing. So read their docs on further information.
+All test for this boilerplate uses [Jest](https://github.com/facebook/jest) and [supertest](https://github.com/visionmedia/superagent) for integration testing. So read their docs on further information.
 
 ## npm scripts
 
@@ -590,8 +590,9 @@ This command:
 
 - runs `npm run lint` ([eslint](http://eslint.org/)) with the [airbnb styleguide](https://github.com/airbnb/javascript) without arrow-parens rule for **better readability**
 - sets the **environment variable** `NODE_ENV` to `testing`
-- runs `nyc` the cli-tool for [istanbul](https://istanbul.js.org/) for test coverage
-- runs `ava` for testing with [AVA](https://github.com/avajs/ava)
+- creates the `database.sqlite` for the test
+- runs `jest --coverage` for testing with [Jest](https://github.com/facebook/jest) and the coverage
+- drops the `database.sqlite` after the test
 
 ## npm run production
 
