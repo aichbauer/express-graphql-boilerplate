@@ -58,7 +58,7 @@ test('AuthController | /rest/login', async () => {
   await user.destroy();
 });
 
-test('AuthController | /rest/validate', async () => {
+test('AuthController | /rest/validate | isValid === true', async () => {
   const user = await User.create({
     email: 'herbert@mail.com',
     password: 'securepassword',
@@ -87,4 +87,16 @@ test('AuthController | /rest/validate', async () => {
   expect(res2.body.isvalid).toBeTruthy();
 
   await user.destroy();
+});
+
+test('AuthController | /rest/validate | isValid === false', async () => {
+  const res = await request(api)
+    .post('/rest/validate')
+    .set('Accept', /json/)
+    .send({
+      token: 'Bearer <token>',
+    })
+    .expect(401);
+
+  expect(res.body.isvalid).toBeFalsy();
 });
