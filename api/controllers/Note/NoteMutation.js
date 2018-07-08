@@ -50,7 +50,7 @@ const updateNote = {
     const foundNote = await Note.findById(id);
 
     if (!foundNote) {
-      throw new Error('Note not found');
+      throw new Error(`Note with id: ${id} not found!`);
     }
 
     const updatedNote = merge(foundNote, {

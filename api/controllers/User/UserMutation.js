@@ -29,7 +29,7 @@ const updateUser = {
     const foundUser = await User.findById(id);
 
     if (!foundUser) {
-      throw new Error('User not found');
+      throw new Error(`User with id: ${id} not found!`);
     }
 
     const updatedUser = merge(foundUser, {
