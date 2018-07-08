@@ -16,8 +16,8 @@ beforeAll(async () => {
   token = await getAccessToken();
 });
 
-afterAll(() => {
-  afterAction();
+afterAll(async () => {
+  await afterAction();
 });
 
 test('User | updateUser', async () => {
@@ -25,7 +25,7 @@ test('User | updateUser', async () => {
     email: 'felix@test1.com',
   });
 
-  const mutation = `
+  const updateMutation = `
     mutation {
       updateUser(
         id: ${user.id}
@@ -68,7 +68,7 @@ test('User | updateUser', async () => {
     .set({
       Authorization: `Bearer ${token}`,
     })
-    .send({ query: mutation })
+    .send({ query: updateMutation })
     .expect(200)
     .expect('Content-Type', /json/);
 
@@ -76,16 +76,12 @@ test('User | updateUser', async () => {
   expect(res2.body.data.updateUser.email).toBe('felix@test2.com');
 });
 
-test('User | deleteUser', async () => {
-  const user = await User.create({
-    username: 'felix',
-    email: 'felix@test3.com',
-  });
-
-  const mutation = `
+test('User | updateUser | user does not exist', async () => {
+  const updateMutation = `
     mutation {
-      deleteUser(
-        id: ${user.id}
+      updateUser(
+        id: 9999
+        username: "Hans"
       ) {
         id
         username
@@ -100,15 +96,47 @@ test('User | deleteUser', async () => {
     .set({
       Authorization: `Bearer ${token}`,
     })
-    .send({ query: mutation })
+    .send({ query: updateMutation })
+    .expect(200)
+    .expect('Content-Type', /json/);
+
+  expect(res.body.data.updateUser).toBe(null);
+  expect(res.body.errors[0].message).toBe('User with id: 9999 not found!');
+});
+
+test('User | deleteUser', async () => {
+  const user = await User.create({
+    username: 'felix',
+    email: 'felix@test3.com',
+  });
+
+  const deleteMutation = `
+      mutation {
+        deleteUser(
+          id: ${user.id}
+        ) {
+          id
+          username
+          email
+        }
+      }
+    `;
+
+  const res = await request(api)
+    .post('/graphql')
+    .set('Accept', /json/)
+    .set({
+      Authorization: `Bearer ${token}`,
+    })
+    .send({ query: deleteMutation })
     .expect(200)
     .expect('Content-Type', /json/);
 
   expect(res.body.data.deleteUser.email).toBe('felix@test3.com');
 });
 
-test('User | deleteUser | non existend user', async () => {
-  const mutation = `
+test('User | deleteUser | user does not exist', async () => {
+  const deleteMutation = `
     mutation {
       deleteUser(
         id: 9999
@@ -126,7 +154,7 @@ test('User | deleteUser | non existend user', async () => {
     .set({
       Authorization: `Bearer ${token}`,
     })
-    .send({ query: mutation })
+    .send({ query: deleteMutation })
     .expect(200)
     .expect('Content-Type', /json/);
 
