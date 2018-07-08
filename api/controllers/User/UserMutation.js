@@ -29,7 +29,7 @@ const updateUser = {
     const foundUser = await User.findById(id);
 
     if (!foundUser) {
-      throw new Error('User not found');
+      throw new Error(`User with id: ${id} not found!`);
     }
 
     const updatedUser = merge(foundUser, {
@@ -50,13 +50,21 @@ const deleteUser = {
       type: new GraphQLNonNull(GraphQLInt),
     },
   },
-  resolve: (user, { id }) => (
-    User
-      .delete()
-      .where({
+  resolve: async (user, { id }) => {
+    const foundUser = await User.findById(id);
+
+    if (!foundUser) {
+      throw new Error(`User with id: ${id} not found!`);
+    }
+
+    await User.destroy({
+      where: {
         id,
-      })
-  ),
+      },
+    });
+
+    return foundUser;
+  },
 };
 
 module.exports = {

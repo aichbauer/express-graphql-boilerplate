@@ -50,7 +50,7 @@ const updateNote = {
     const foundNote = await Note.findById(id);
 
     if (!foundNote) {
-      throw new Error('Note not found');
+      throw new Error(`Note with id: ${id} not found!`);
     }
 
     const updatedNote = merge(foundNote, {
@@ -71,13 +71,21 @@ const deleteNote = {
       type: new GraphQLNonNull(GraphQLInt),
     },
   },
-  resolve: (value, { id }) => (
-    Note
-      .delete()
-      .where({
+  resolve: async (value, { id }) => {
+    const foundNote = await Note.findById(id);
+
+    if (!foundNote) {
+      throw new Error(`Note with id: ${id} not found!`);
+    }
+
+    await Note.destroy({
+      where: {
         id,
-      })
-  ),
+      },
+    });
+
+    return foundNote;
+  },
 };
 
 module.exports = {
