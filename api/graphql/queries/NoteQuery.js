@@ -4,8 +4,8 @@ const {
   GraphQLList,
 } = require('graphql');
 
-const NoteType = require('../../models/Note/NoteType');
-const Note = require('../../models/Note/Note');
+const { NoteType } = require('../types');
+const { Note } = require('../../models');
 
 const noteQuery = {
   type: new GraphQLList(NoteType),
@@ -34,4 +34,4 @@ const noteQuery = {
   resolve: (user, args) => Note.findAll({ where: args }),
 };
 
-module.exports = noteQuery;
+module.exports = { noteQuery };

@@ -1,6 +1,6 @@
-const User = require('../../models/User/User');
-const authService = require('../../services/auth.service');
-const bcryptService = require('../../services/bcrypt.service');
+const { User } = require('../models');
+const authService = require('../services/auth.service');
+const bcryptService = require('../services/bcrypt.service');
 
 const AuthController = () => {
   const register = async (req, res) => {

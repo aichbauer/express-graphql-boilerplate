@@ -31,4 +31,4 @@ const NoteType = new GraphQLObjectType({
   }),
 });
 
-module.exports = NoteType;
+module.exports = { NoteType };

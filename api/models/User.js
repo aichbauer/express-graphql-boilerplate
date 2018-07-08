@@ -1,8 +1,8 @@
 const Sequelize = require('sequelize');
-const bcryptSevice = require('../../services/bcrypt.service');
+const bcryptSevice = require('../services/bcrypt.service');
 
-const sequelize = require('../../../config/database');
-const Note = require('../Note/Note');
+const sequelize = require('../../config/database');
+const { Note } = require('./Note');
 
 const hooks = {
   beforeCreate(user) {
@@ -15,13 +15,13 @@ const tableName = 'users';
 const User = sequelize.define('User', {
   username: {
     type: Sequelize.STRING,
+    unique: true,
   },
   password: {
     type: Sequelize.STRING,
   },
   email: {
     type: Sequelize.STRING,
-    unique: true,
   },
 }, { hooks, tableName });
 
@@ -36,4 +36,4 @@ User.prototype.toJSON = function () {
 
 User.hasMany(Note, { as: 'notes', foreignKey: 'userId' });
 
-module.exports = User;
+module.exports = { User };
