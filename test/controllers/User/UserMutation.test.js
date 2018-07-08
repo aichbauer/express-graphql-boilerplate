@@ -6,7 +6,7 @@ const {
 } = require('../../helpers/setup');
 const { getAccessToken } = require('../../helpers/getAccessToken');
 
-const User = require('../../../api/models/User/User');
+const { User } = require('../../../api/models');
 
 let api;
 let token;
