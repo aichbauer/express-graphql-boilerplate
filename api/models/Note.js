@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 
-const sequelize = require('../../../config/database');
+const sequelize = require('../../config/database');
 
 const tableName = 'notes';
 
@@ -10,4 +10,4 @@ const Note = sequelize.define('Note', {
   },
 }, { tableName });
 
-module.exports = Note;
+module.exports = { Note };

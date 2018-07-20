@@ -1,5 +1,5 @@
 const authService = require('../../api/services/auth.service');
-const User = require('../../api/models/User/User');
+const { User } = require('../../api/models');
 
 const getAccessToken = async (id) => {
   let token;

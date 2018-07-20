@@ -16,7 +16,7 @@ const expressPlayground = require('graphql-playground-middleware-express').defau
 const config = require('../config/');
 const auth = require('./policies/auth.policy');
 const dbService = require('./services/db.service');
-const schema = require('./controllers/');
+const { schema } = require('./graphql');
 
 // environment: development, testing, production
 const environment = process.env.NODE_ENV;
@@ -26,7 +26,7 @@ const environment = process.env.NODE_ENV;
  */
 const api = express();
 const server = http.Server(api);
-const mappedRoutes = mapRoutes(config.publicRoutes, 'api/controllers/Auth/');
+const mappedRoutes = mapRoutes(config.publicRoutes, 'api/controllers/');
 const DB = dbService(environment, config.migrate).start();
 
 // allow cross origin requests

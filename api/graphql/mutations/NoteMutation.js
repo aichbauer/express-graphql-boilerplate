@@ -5,8 +5,8 @@ const {
 } = require('graphql');
 const merge = require('lodash.merge');
 
-const NoteType = require('../../models/Note/NoteType');
-const Note = require('../../models/Note/Note');
+const { NoteType } = require('../types');
+const { Note } = require('../../models');
 
 const createNote = {
   type: NoteType,

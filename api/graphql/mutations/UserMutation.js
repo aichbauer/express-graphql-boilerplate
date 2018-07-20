@@ -5,8 +5,8 @@ const {
 } = require('graphql');
 const merge = require('lodash.merge');
 
-const UserType = require('../../models/User/UserType');
-const User = require('../../models/User/User');
+const { UserType } = require('../types');
+const { User } = require('../../models');
 
 const updateUser = {
   type: UserType,

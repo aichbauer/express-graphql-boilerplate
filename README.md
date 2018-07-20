@@ -43,18 +43,19 @@ curl -i -H "Content-Type:application/json" -H "Authorization: Bearer <token>" -X
 - [Folder Structure](#folder-structure)
 - [Controllers](#controllers)
   - [Create a Controller](#create-a-controller)
+- [GraphQL](#graphql)
   - [Create a Query](#create-a-query)
   - [Create a Mutation](#create-a-mutation)
+  - [Create a Type](#create-a-type)
   - [RootQuery and Schema](#rootquery-and-schema)
 - [Models](#models)
   - [Create a Model](#create-a-model)
-  - [Create a Type](#create-a-type)
 - [Policies](#policies)
   - [auth.policy](#authpolicy)
 - [Services](#services)
 - [Config](#config)
   - [Connection and Database](#connection-and-database)
-- [Routes](#routes)
+  - [Routes](#routes)
 - [Test](#test)
   - [Setup](#setup)
 - [npm scripts](#npm-scripts)
@@ -90,35 +91,37 @@ $ npm i mysql2 -S
 $ npm i pg pg-hstore -S
 ```
 
-sqlite is supported out of the box as it is the default.
+sqlite is supported out of the box as it is the default database.
 
 ## Folder Structure
 
 This boilerplate has four main directories:
 
-- api - for Controllers, Queries, Mutations, Models, Types, Services, etc.
+- api - for controllers, queries, mutations, models, types, cervices, etc.
 - config - for routes, database, etc.
 - db - this is only a directory for the sqlite database, the default for `NODE_ENV=development`
 - test - using [Jest](https://github.com/facebook/jest)
 
 ## Controllers
 
-This directory holds all Controllers. As a REST Controller does not vary much from a GraphQL Schema, they are also located inside of it. A **Query** and a **Mutation** in GraphQL has functions, so called **Resolvers** to modify a Model. Just like a **Controller** in a REST API has functions to modify a Model. The difference is that a function on a REST Controller is mapped to one specific route of your API, as if you have a **Query** or a **Mutation** in GraphQL all of your functions are mapped to only one route. The magic happens under the hood of GraphQL. When you send a **Query** to the server, GraphQL takes a look at your Query and takes a look at your Schema and only responds with the fields you requested in the Query. And this is also the point where you can make **nested Queries**, as GraphQL will simply take a look at what your **Query** looks like and the types it can use and responds with it.
-
-You always have to keep in mind that a **Query** and a **Mutation** is the complete same for GraphQL, it does not differentiate between it until you pass it into `GraphQLSchema`. A **Query** has arguments, as a **Mutation** has arguments, you can use this arguments to resolve a function, most likely you would use this arguments to insert something into a database or to get entries from a database.
+Controllers in this boilerplate have a naming convention: `ModelnameController.js` and uses an object factory pattern. To use a model inside of your controller you have to require it. We use [Sequelize](http://docs.sequelizejs.com/) as ORM, if you want further information read the [Docs](http://docs.sequelizejs.com/).
 
 ### Create a Controller
 
 For an example with all CRUD operations visit the [express-rest-api-boilerplate](https://www.github.com/aichbauer/express-rest-api-boilerplate)
 
+## GraphQL
+
+This directory holds all files that are related to GraphQL (mutations, queries, types, ...).
+
 ### Create a Query
 
-> Note: You need to have a [Type](#create-a-type), and an existing [Model](#create-a-model) to use **Queries** in combination with a database!
+> Note: You need to have a [Type](#create-a-type), and an existing [Model](#create-a-model) to use queries in combination with a database!
 
-Example **Query** for a User which lets you request all different fields which are defined in `args`.
+Example query for a User which lets you request all different fields which are defined in `args`.
 
 ```js
-// import the reuired GraphQL Types
+// import the required GraphQL Types
 const {
   GraphQLInt,
   GraphQLString,
@@ -126,10 +129,10 @@ const {
 } = require('graphql');
 
 // import the Model and the Type
-const UserType = require('../../models/User/UserType');
-const User = require('../../models/User/User');
+const { UserType } = require('../types');
+const { User } = require('../../models');
 
-// create the Query
+// create the query
 const userQuery = {
   type: new GraphQLList(UserType), // the Type which it returns (an array of Users)
   args: {
@@ -167,34 +170,37 @@ const userQuery = {
   resolve: (user, args) => User.findAll({ where: args }),
 };
 
-module.exports = userQuery;
+module.exports = { userQuery };
 ```
+
+Do not forget to `require` and `export`  the query in `./api/graphql/queries/index.js`.
 
 ### Create a Mutation
 
-> Note: You need to have a [Type](#create-a-type), and an existing [Model](#create-a-model) to use **Mutations** in combination with a database!
+> Note: You need to have a [Type](#create-a-type), and an existing [Model](#create-a-model) to use mutations in combination with a database!
 
 ```js
-// import the required GraphQL Types
+// import the rqeuired GraphQL Types
 const {
   GraphQLString,
   GraphQLInt,
   GraphQLNonNull,
 } = require('graphql');
+const merge = require('lodash.merge');
 
-// import Model and Type
-const UserType = require('../../models/User/UserType');
-const User = require('../../models/User/User');
+// import the Model and the Type
+const { UserType } = require('../types');
+const { User } = require('../../models');
 
-// the update Mutation
+// create the mutation
 const updateUser = {
-  // the respond Type
+  // the Type which it returns (one user)
   type: UserType,
-  description: 'The Mutation that allows you to update an existing User by Id',
+  description: 'The mutation that allows you to update an existing User by Id',
+  // arguments you can use
+  // have to be fields that are
+  // resolvable by the UserType
   args: {
-    // arguments you can use
-    // have to be fields that are
-    // resolvable by the UserType
     id: {
       name: 'id',
       type: new GraphQLNonNull(GraphQLInt),
@@ -210,30 +216,27 @@ const updateUser = {
   },
   // find the User in the DB
   // update the fields for this user
-  resolve: (user, { id, username, email }) => (
-    User
-      .findById(id)
-      .then((foundUser) => {
-        if (!foundUser) {
-          return 'User not found';
-        }
+  resolve: async (user, { id, username, email }) => {
+    const foundUser = await User.findById(id);
 
-        const thisUsername = username !== undefined ? username : foundUser.username;
-        const thisEmail = email !== undefined ? email : foundUser.email;
+    if (!foundUser) {
+      throw new Error(`User with id: ${id} not found!`);
+    }
 
-        return foundUser.update({
-          username: thisUsername,
-          email: thisEmail,
-        });
-      })
-  ),
+    const updatedUser = merge(foundUser, {
+      username,
+      email,
+    });
+
+    return foundUser.update(updatedUser);
+  },
 };
 
-// the update Mutation
+// the delete mutation
 const deleteUser = {
-  // the respond Type
+  // the Type which it returns (one user)
   type: UserType,
-  description: 'The Mutation that allows you to delete a existing User by Id',
+  description: 'The mutation that allows you to delete a existing User by Id',
   // arguments you can use
   args: {
     id: {
@@ -241,13 +244,21 @@ const deleteUser = {
       type: new GraphQLNonNull(GraphQLInt),
     },
   },
-  resolve: (user, { id }) => (
-    User
-      .delete()
-      .where({
+  resolve: async (user, { id }) => {
+    const foundUser = await User.findById(id);
+
+    if (!foundUser) {
+      throw new Error(`User with id: ${id} not found!`);
+    }
+
+    await User.destroy({
+      where: {
         id,
-      })
-  ),
+      },
+    });
+
+    return foundUser;
+  },
 };
 
 module.exports = {
@@ -256,9 +267,58 @@ module.exports = {
 };
 ```
 
-## RootQuery and Schema
+Do not forget to `require` and `export`  the mutation in `./api/graphql/mutations/index.js`.
 
-The Schema holds the RootQuery and the RootMutation which holds all the other Queries and Mutations, that is applied to one route which is your entrypoint for your GraphQL API. The Schema has to be exported and used in the `./api/api.js` file.
+### Create a Type
+
+Types are necessary to let GraphQL know, how to resolve the different fields you provide in your queries and mutations.
+
+```js
+// import the required GraphQL Types
+const {
+  GraphQLObjectType,
+  GraphQLInt,
+  GraphQLString,
+  GraphQLList,
+} = require('graphql');
+
+// our UserType definition
+const UserType = new GraphQLObjectType({
+  name: 'User',
+  description: 'This represents a User',
+  // all the fields a User can have
+  fields: () => ({
+    id: {
+      type: GraphQLInt,
+      resolve: (user) => user.id,
+    },
+    username: {
+      type: GraphQLString,
+      resolve: (user) => user.username,
+    },
+    email: {
+      type: GraphQLString,
+      resolve: (user) => user.email,
+    },
+    createdAt: {
+      type: GraphQLString,
+      resolve: (user) => user.createdAt,
+    },
+    updatedAt: {
+      type: GraphQLString,
+      resolve: (user) => user.updatedAt,
+    },
+  }),
+});
+
+module.exports = { UserType };
+```
+
+Do not forget to `require` and `export` the type in `./api/graphql/types/index.js`.
+
+### RootQuery, RootMutation and Schema
+
+The schema holds the `RootQuery` and the `RootMutation` which holds all the other Queries and Mutations, that is applied to one route which is your entrypoint for your GraphQL API. The schema has to be exported and used in the `./api/api.js` file.
 
 ```js
 // import required GraphQL Types
@@ -268,11 +328,11 @@ const {
 } = require('graphql');
 
 // import Query and Mutations
-const userQuery = require('./User/UserQuery');
+const { userQuery } = require('./queries');
 const {
   updateUser,
   deleteUser,
-} = require('./User/UserMutation');
+} = require('./mutations');
 
 // add Queries to RootQuery
 const RootQuery = new GraphQLObjectType({
@@ -295,15 +355,15 @@ const RootMutation = new GraphQLObjectType({
 
 // add RootQuery and RootMutation
 // to your Schema
-const Schema = new GraphQLSchema({
+const schema = new GraphQLSchema({
   query: RootQuery,
   mutation: RootMutation,
 });
 
-module.exports = Schema;
+module.exports = { schema };
 ```
 
-To use the this Schema for your API we need to add it to a route, as you can see we use our auth service
+To use the this schema for your API we need to add it to a route, as you can see we use our auth service
 to protect our GraphQL API to be used without authorization via a valid JSON Web Token.
 We get a nice web interface for our GraphQL API via the `graphql-playground-middleware-express` package.
 You can use it if you visit `http://localhost:2017/explore`. If you want to use it in production you should make sure only you have access to `/explore`.
@@ -318,15 +378,17 @@ The entrypoint for our GraphQL API is `http://localhost:2017/graphql`
 
 ## Models
 
-### Create a Model
+This folder holds all models. Every model is `required` and `exported` in `index.js`.
 
-Controllers in this boilerplate have a naming convention: `Model.js` and uses [Sequelize](http://docs.sequelizejs.com/) to define our Models, if you want further information, read the [Docs](http://docs.sequelizejs.com/).
+### Create a model
+
+Models in this boilerplate have a naming convention: `Model.js` and uses [Sequelize](http://docs.sequelizejs.com/) to define our Models, if you want further information, read the [Docs](http://docs.sequelizejs.com/).
 
 Example User Model:
 
 ```js
+// as our ORM
 const Sequelize = require('sequelize');
-
 // for encrypting our passwords
 const bcryptSevice = require('../services/bcrypt.service');
 
@@ -336,20 +398,7 @@ const sequelize = require('../../config/database');
 // hooks are functions that can run before or after a specific event
 const hooks = {
   beforeCreate(user) {
-    user.password = bcryptSevice.password(user);
-  },
-};
-
-// instanceMethods are functions that run on instances of our Model
-// toJSON runs before delivering it to our client
-// we delete the password, that the client has no sensitive data
-const instanceMethods = {
-  toJSON() {
-    const values = Object.assign({}, this.get());
-
-    delete values.password;
-
-    return values;
+    user.password = bcryptSevice().password(user); // eslint-disable-line no-param-reassign
   },
 };
 
@@ -360,71 +409,31 @@ const tableName = 'users';
 const User = sequelize.define('User', {
   username: {
     type: Sequelize.STRING,
-    unique: true,
   },
   password: {
     type: Sequelize.STRING,
   },
-}, { hooks, instanceMethods, tableName });
+  email: {
+    type: Sequelize.STRING,
+    unique: true,
+  },
+}, { hooks, tableName });
 
-module.exports = User;
+// instanceMethods are functions that run on instances of our Model
+// toJSON runs before delivering it to our client
+// we delete the password, that the client has no sensitive data
+User.prototype.toJSON = function () {
+  const values = Object.assign({}, this.get());
+
+  delete values.password;
+
+  return values;
+};
+
+module.exports = { User };
 ```
 
-### Create a Type
-
-Types are necessary to let GraphQL know, how to resolve the different fields you provide in your Queries.
-
-```js
-const {
-  GraphQLObjectType,
-  GraphQLInt,
-  GraphQLString,
-  GraphQLList,
-} = require('graphql');
-
-const NoteType = require('../Note/NoteType');
-const Note = require('../Note/Note');
-
-const UserType = new GraphQLObjectType({
-  name: 'User',
-  description: 'This represents a User',
-  fields: () => ({
-    id: {
-      type: GraphQLInt,
-      resolve: (user) => user.id,
-    },
-    username: {
-      type: GraphQLString,
-      resolve: (user) => user.username,
-    },
-    email: {
-      type: GraphQLString,
-      resolve: (user) => user.email,
-    },
-    notes: {
-      type: new GraphQLList(NoteType),
-      resolve: (user) => (
-        Note
-          .findAll({
-            where: {
-              UserId: user.id,
-            },
-          })
-      ),
-    },
-    createdAt: {
-      type: GraphQLString,
-      resolve: (user) => user.createdAt,
-    },
-    updatedAt: {
-      type: GraphQLString,
-      resolve: (user) => user.updatedAt,
-    },
-  }),
-});
-
-module.exports = UserType;
-```
+Do not forget to `require` the the model in `./api/models/index.js`.
 
 ## Policies
 
@@ -529,7 +538,7 @@ module.exports = {
 
 Holds all the server configurations.
 
-## Connection and Database
+### Connection and Database
 
 > Note: If you use mysql make sure mysql server is running on the machine
 
@@ -559,7 +568,7 @@ To not configure the production code.
 
 To start the DB, add the credentials for production. Add `environment variables` by typing e.g. `export DB_USER=yourusername` before starting the API.
 
-## Routes
+### Routes
 
 > For an example REST API with routes visit [express-rest-api-boilerplate](https://www.github.com/aichbauer/express-rest-api-boilerplate)
 
@@ -594,7 +603,7 @@ This command:
 - runs `jest --coverage` for testing with [Jest](https://github.com/facebook/jest) and the coverage
 - drops the `database.sqlite` after the test
 
-## npm run production
+### npm run production
 
 This command:
 

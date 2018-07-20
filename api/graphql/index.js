@@ -3,17 +3,17 @@ const {
   GraphQLObjectType,
 } = require('graphql');
 
-const userQuery = require('./User/UserQuery');
+const { userQuery } = require('./queries');
 const {
   updateUser,
   deleteUser,
-} = require('./User/UserMutation');
-const noteQuery = require('./Note/NoteQuery');
+} = require('./mutations');
+const { noteQuery } = require('./queries');
 const {
   createNote,
   updateNote,
   deleteNote,
-} = require('./Note/NoteMutation');
+} = require('./mutations');
 
 const RootQuery = new GraphQLObjectType({
   name: 'rootQuery',
@@ -41,4 +41,4 @@ const schema = new GraphQLSchema({
   mutation: RootMutation,
 });
 
-module.exports = schema;
+module.exports = { schema };

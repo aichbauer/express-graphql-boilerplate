@@ -6,13 +6,13 @@ const { graphqlExpress } = require('apollo-server-express');
 const config = require('../../config/');
 const database = require('../../config/database');
 const auth = require('../../api/policies/auth.policy');
-const Schema = require('../../api/controllers/index');
+const { schema } = require('../../api/graphql');
 
 process.env.NODE_ENV = 'testing';
 
 const beforeAction = async () => {
   const testapp = express();
-  const mappedOpenRoutes = mapRoutes(config.publicRoutes, 'api/controllers/Auth/');
+  const mappedOpenRoutes = mapRoutes(config.publicRoutes, 'api/controllers/');
 
   testapp.use(bodyParser.urlencoded({ extended: false }));
   testapp.use(bodyParser.json());
@@ -23,12 +23,12 @@ const beforeAction = async () => {
   // private GraphQL API
   testapp.all('/graphql', (req, res, next) => auth(req, res, next));
   testapp.get('/graphql', graphqlExpress({
-    schema: Schema,
+    schema,
     pretty: true,
     graphiql: false,
   }));
   testapp.post('/graphql', graphqlExpress({
-    schema: Schema,
+    schema,
     pretty: true,
     graphiql: false,
   }));
