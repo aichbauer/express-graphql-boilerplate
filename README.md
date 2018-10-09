@@ -676,7 +676,7 @@ $ sudo apt-get install nginx git-all
 $ curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
 $ sudo apt-get install -y nodejs
 # install forever js
-$ npm i -g forever
+$ npm i -g forever yarn
 # now copy your project to the server
 $ git clone https://example.com/your/repository
 ```
@@ -687,9 +687,9 @@ To use this project with `postgres` you need to install two additional packages 
 # cd into your project
 $ cd project
 # install dependencies
-$ npm i
+$ yarn
 # install two new packages for postgres
-$ npm i -S pg pg-hstore
+$ yarn add pg pg-hstore
 # start project with forever
 $ NODE_ENV=production DB_NAME=DB_NAME DB_USER=DB_USER DB_PASS=DB_PASS DB_HOST=DB_HOST DB_PORT=DB_PORT JWT_SECRET=JWT_SECRET forever start -c node ./api/api.js
 ```
