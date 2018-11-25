@@ -76,9 +76,9 @@ graphQLServer.applyMiddleware({
 });
 
 server.listen(config.port, () => {
-  if (environment !== 'production' &&
-    environment !== 'development' &&
-    environment !== 'testing'
+  if (environment !== 'production'
+    && environment !== 'development'
+    && environment !== 'testing'
   ) {
     console.error(`NODE_ENV is set to ${environment}, but only production and development are valid.`);
     process.exit(1);
