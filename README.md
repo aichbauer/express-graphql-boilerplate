@@ -2,14 +2,14 @@
 
 > Express GraphQL API with JWT Authentication and support for sqlite, mysql, and postgresql
 
-- authentication via [JWT](https://jwt.io/)
-- support for [sqlite](https://www.sqlite.org/), [mysql](https://www.mysql.com/), and [postgresql](https://www.postgresql.org/)
-- support for [graphiql](https://github.com/graphql/graphiql) an easy way exploring a GrapgQL API
-- environments for `development`, `testing`, and `production`
-- linting via [eslint](https://github.com/eslint/eslint)
-- integration tests running with [Jest](https://github.com/facebook/jest)
-- built with [npm sripts](#npm-scripts)
-- examples for User, Note, and nested GraphQL Queries
+- Authentication via [JWT](https://jwt.io/)
+- Support for [sqlite](https://www.sqlite.org/), [mysql](https://www.mysql.com/), and [postgresql](https://www.postgresql.org/)
+- Support for [graphiql](https://github.com/graphql/graphiql) an easy way exploring a GrapgQL API
+- Environments for `development`, `testing`, and `production`
+- Linting via [eslint](https://github.com/eslint/eslint)
+- Integration tests running with [Jest](https://github.com/facebook/jest)
+- Built with [npm sripts](#npm-scripts)
+- Examples for User, Note, and nested GraphQL Queries
 
 ## Quick Intro
 
@@ -75,7 +75,7 @@ $ git clone https://github.com/aichbauer/express-graphql-boilerplate.git
 then
 
 ```sh
-# cd into project root
+# change directory to project root
 $ cd express-graphql-boilerplate
 # install dependencies
 $ yarn
@@ -88,19 +88,23 @@ $ yarn add pg pg-hstore
 or
 
 ```sh
+# change directory to project root
 $ cd express-graphql-boilerplate
+# install dependencies
 $ npm i
+# to use mysql
 $ npm i mysql2 -S
+# to use postgresql
 $ npm i pg pg-hstore -S
 ```
 
-sqlite is supported out of the box as it is the default database.
+SQLite is supported out of the box as it is the default database.
 
 ## Folder Structure
 
 This boilerplate has four main directories:
 
-- api - for controllers, queries, mutations, models, types, cervices, etc.
+- api - for controllers, queries, mutations, models, types, services, etc.
 - config - for routes, database, etc.
 - db - this is only a directory for the sqlite database, the default for `NODE_ENV=development`
 - test - using [Jest](https://github.com/facebook/jest)
@@ -628,6 +632,7 @@ Optional:
 
 ### other commands
 
+- `npm run project clean` - clean up `controllers`, `models`, `graphql`, `config/routes` to start developing your own api
 - `npm run dev` - simply starts the server without a watch task
 - `npm run creates-sqlite-db` - creates the sqlite database file
 - `npm run drop-sqlite-db` - deletes the sqlite database file
