@@ -1,7 +1,7 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const mapRoutes = require('express-routes-mapper');
-const { graphqlExpress } = require('apollo-server-express');
+const { ApolloServer } = require('apollo-server-express');
 
 const config = require('../../config/');
 const database = require('../../config/database');
@@ -21,17 +21,33 @@ const beforeAction = async () => {
   testapp.use('/rest', mappedOpenRoutes);
 
   // private GraphQL API
-  testapp.all('/graphql', (req, res, next) => auth(req, res, next));
-  testapp.get('/graphql', graphqlExpress({
+  testapp.post('/graphql', (req, res, next) => auth(req, res, next));
+
+  const graphQLServer = new ApolloServer({
     schema,
-    pretty: true,
-    graphiql: false,
-  }));
-  testapp.post('/graphql', graphqlExpress({
-    schema,
-    pretty: true,
-    graphiql: false,
-  }));
+  });
+
+  graphQLServer.applyMiddleware({
+    app: testapp,
+    cors: {
+      origin: true,
+      credentials: true,
+      methods: ['POST'],
+      allowedHeaders: [
+        'X-Requested-With',
+        'X-HTTP-Method-Override',
+        'Content-Type',
+        'Accept',
+        'Authorization',
+        'Access-Control-Allow-Origin',
+      ],
+    },
+    playground: {
+      settings: {
+        'editor.theme': 'light',
+      },
+    },
+  });
 
   await database.authenticate();
   await database.drop();

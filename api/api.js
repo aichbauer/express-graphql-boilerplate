@@ -4,11 +4,10 @@
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const express = require('express');
-const { graphqlExpress } = require('apollo-server-express');
+const { ApolloServer } = require('apollo-server-express');
 const helmet = require('helmet');
 const http = require('http');
 const mapRoutes = require('express-routes-mapper');
-const expressPlayground = require('graphql-playground-middleware-express').default;
 
 /**
  * server configuration
@@ -48,10 +47,33 @@ api.use(bodyParser.json());
 api.use('/rest', mappedRoutes);
 
 // private GraphQL API
-api.all('/graphql', (req, res, next) => auth(req, res, next));
-api.use('/graphql', bodyParser.json(), graphqlExpress({ schema, cacheControl: true }));
+api.post('/graphql', (req, res, next) => auth(req, res, next));
 
-api.get('/explore', expressPlayground({ endpoint: '/graphql' }));
+const graphQLServer = new ApolloServer({
+  schema,
+});
+
+graphQLServer.applyMiddleware({
+  app: api,
+  cors: {
+    origin: true,
+    credentials: true,
+    methods: ['POST'],
+    allowedHeaders: [
+      'X-Requested-With',
+      'X-HTTP-Method-Override',
+      'Content-Type',
+      'Accept',
+      'Authorization',
+      'Access-Control-Allow-Origin',
+    ],
+  },
+  playground: {
+    settings: {
+      'editor.theme': 'light',
+    },
+  },
+});
 
 server.listen(config.port, () => {
   if (environment !== 'production' &&
