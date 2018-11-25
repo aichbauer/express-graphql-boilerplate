@@ -12,6 +12,7 @@
     "url": "https://github.com/aichbauer/express-rest-api-boilerplate/issues"
   },
   "scripts": {
+    "project": "node ./scripts/index.js",
     "dev": "cross-env NODE_ENV=development node ./api/api.js",
     "create-sqlite-db": "shx touch ./db/database.sqlite",
     "drop-sqlite-db": "shx rm ./db/database.sqlite",
@@ -54,10 +55,12 @@
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.11.0",
+    "fs-extra": "^7.0.1",
     "husky": "^0.14.3",
     "jest": "^22.4.3",
     "nodemon": "^1.17.3",
     "shx": "^0.2.2",
-    "supertest": "^3.0.0"
+    "supertest": "^3.0.0",
+    "yargs": "^12.0.5"
   }
 }
