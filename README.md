@@ -25,16 +25,16 @@ $ npm i
 # start application
 $ npm start
 # create a User via the REST API
-curl -H "Content-Type: application/json" -X POST -d '{"email":"test@mail.com","password":"pw","password2":"pw"}' http://localhost:2017/rest/register
+$ curl -H "Content-Type: application/json" -X POST -d '{"email":"test@mail.com","password":"pw","password2":"pw"}' http://localhost:2017/rest/register
 # login a User via the REST API
 # you will get a JSON with a token and this is your token to get access to the GraphQL API
-curl -H "Content-Type: application/json" -X POST -d '{"email":"test@mail.com","password":"pw"}' http://localhost:2017/rest/login
+$ curl -H "Content-Type: application/json" -X POST -d '{"email":"test@mail.com","password":"pw"}' http://localhost:2017/rest/login
 # requesting a User via the GraphQL API
-curl -i -H "Content-Type:application/json" -H "Authorization: Bearer <token>" -X POST -d '{"query": "{user{id, username}}"}'  http://localhost:2017/graphql
+$ curl -i -H "Content-Type:application/json" -H "Authorization: Bearer <token>" -X POST -d '{"query": "{user{id, username}}"}'  http://localhost:2017/graphql
 # creating a Note for a user via the GraphQL API
-curl -i -H "Content-Type:application/json" -H "Authorization: Bearer <token>" -X POST -d '{"query": "mutation{createNote(userId:1,note:\"this is a note\"){id,userId,note}}"}' http://localhost:2017/graphql
+$ curl -i -H "Content-Type:application/json" -H "Authorization: Bearer <token>" -X POST -d '{"query": "mutation{createNote(userId:1,note:\"this is a note\"){id,userId,note}}"}' http://localhost:2017/graphql
 # requesting a User with its Notes via the GraphQL API (nested Query)
-curl -i -H "Content-Type:application/json" -H "Authorization: Bearer <token>" -X POST -d '{"query": "{user{id, username, notes{id, note}}}"}'  http://localhost:2017/graphql
+$ curl -i -H "Content-Type:application/json" -H "Authorization: Bearer <token>" -X POST -d '{"query": "{user{id, username, notes{id, note}}}"}'  http://localhost:2017/graphql
 ```
 
 ## Table of Contents
@@ -59,6 +59,9 @@ curl -i -H "Content-Type:application/json" -H "Authorization: Bearer <token>" -X
 - [Test](#test)
   - [Setup](#setup)
 - [npm scripts](#npm-scripts)
+- [Deploy](#deploy)
+  - [database](#database)
+  - [nginx](#nginx)
 
 ## Install and Use
 
@@ -633,6 +636,113 @@ Optional:
 - `npm run prepush` - a hook wich runs before pushing to a repository, runs `npm test` and `npm run drop-sqlite-db`
 - `pretest` - runs linting before `npm test`
 - `test-ci` - only runs tests, nothing in pretest, nothing in posttest, for better use with ci tools
+
+## Deploy
+
+This section gives an overview of how to deploy this project to a server. For this examples we use an ubuntu server.
+
+### Database
+
+This section gives an overview of how to set up the database (for this example we will use a postgres database).
+
+```sh
+# update package database
+$ sudo apt-get update
+# install all postgres required resources
+$ sudo apt-get install python-psycopg2 libpq-dev postgresql postgresql-contrib
+# open postgres
+$ sudo -u postgres psql postgres
+# set passsword for postgres user
+$ \password postgres
+# create a new DB
+$ CREATE DATABASE db_name;
+# list all dbs
+$ \l
+# exit psql
+$ \q
+```
+
+To use postgres with this project you need to install two additional packages from npm. See next section.
+
+### nginx
+
+This section gives an overview of how to use ngingx as a webserver for this project.
+
+```sh
+# update package database
+$ sudo apt-get update
+# install all required resources for this project and nginx
+$ sudo apt-get install nginx git-all
+$ curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+$ sudo apt-get install -y nodejs
+# install forever js
+$ npm i -g forever yarn
+# now copy your project to the server
+$ git clone https://example.com/your/repository
+```
+
+To use this project with `postgres` you need to install two additional packages from npm.
+
+```sh
+# cd into your project
+$ cd project
+# install dependencies
+$ yarn
+# install two new packages for postgres
+$ yarn add pg pg-hstore
+# start project with forever
+$ NODE_ENV=production DB_NAME=DB_NAME DB_USER=DB_USER DB_PASS=DB_PASS DB_HOST=DB_HOST DB_PORT=DB_PORT JWT_SECRET=JWT_SECRET forever start -c node ./api/api.js
+```
+
+You need to update the `config/connection.js` to use `postgres`, see [config](#config).
+
+Now we need our `nginx` configuration to be set up. Save the following in `/etc/nginx/sites-available/project_name`. Where `project_name` is the name of your project. You need to replace everything that is written in UPPERCASE with your details.
+
+If you do not have a domain yet just fill `_` for `PUBLIC_SERVER_NAME`. `PUBLIC_IP` is the IP of your server and `PUBLIC_PORT` is most likely `80` for `http` and `443` for `https`.
+
+```nginx
+server {
+    listen PUBLIC_IP:PUBLIC_PORT;
+
+    server_name PUBLIC_SERVER_NAME;
+
+    location / {
+        proxy_pass http://127.0.0.1:2017;
+    }
+}
+```
+
+Now configure `nginx` to use your config.
+
+```sh
+#stop nginx
+$ sudo systemctl stop nginx
+# delete symlink default config
+$ sudo rm /etc/nginx/sites-enabled/default
+# create new sysmlink to sites enabled
+$ ln -s /etc/nginx/sites-available/project_name /etc/nginx/sites-enabled/project_name
+# reload and start nginx with new configuration
+$ sudo systemctl start nginx
+```
+
+Your project is now live under `http://PUBLIC_SEVER_NAME` or `http://PUBLIC_IP`.
+
+If you now visit `http://PUBLIC_SEVER_NAME/explore` or `http://PUBLIC_IP/explore` you need a valid HTTP header to access the server.
+
+For example register a new user if you just used this blank boilerplate.
+
+```sh
+# you will get a JSON with a token and this is your token to get access to the GraphQL API
+$ curl -H "Content-Type: application/json" -X POST -d '{"email":"test@mail.com","password":"pw"}' http://localhost:2017/rest/login
+```
+
+Use this token and add it under HTTP headers on the bottom left of the `graphql playground` you are now able to use the `graphql playground` on a server.
+
+```json
+{
+  "Authorization": "Bearer <token>"
+}
+```
 
 ## LICENSE
 
