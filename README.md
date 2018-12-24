@@ -4,7 +4,7 @@
 
 - Authentication via [JWT](https://jwt.io/)
 - Support for [sqlite](https://www.sqlite.org/), [mysql](https://www.mysql.com/), and [postgresql](https://www.postgresql.org/)
-- Support for [graphiql](https://github.com/graphql/graphiql) an easy way exploring a GrapgQL API
+- Support for [graphiql](https://github.com/graphql/graphiql) an easy way exploring a GraphQL API
 - Environments for `development`, `testing`, and `production`
 - Linting via [eslint](https://github.com/eslint/eslint)
 - Integration tests running with [Jest](https://github.com/facebook/jest)
