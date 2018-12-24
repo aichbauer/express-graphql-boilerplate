@@ -551,7 +551,7 @@ Holds all the server configurations.
 
 > Note: If you use postgresql make sure postgresql server is running on the machine
 
-This two files are the way to establish a connaction to a database.
+These two files are the way to establish a connection to a database.
 
 You only need to touch connection.js, default for `development` is sqlite, but it is easy as typing `mysql` or `postgres` to switch to another db.
 
