@@ -4,11 +4,11 @@
 
 - Authentication via [JWT](https://jwt.io/)
 - Support for [sqlite](https://www.sqlite.org/), [mysql](https://www.mysql.com/), and [postgresql](https://www.postgresql.org/)
-- Support for [graphiql](https://github.com/graphql/graphiql) an easy way exploring a GrapgQL API
+- Support for [graphiql](https://github.com/graphql/graphiql) an easy way exploring a GraphQL API
 - Environments for `development`, `testing`, and `production`
 - Linting via [eslint](https://github.com/eslint/eslint)
 - Integration tests running with [Jest](https://github.com/facebook/jest)
-- Built with [npm sripts](#npm-scripts)
+- Built with [npm scripts](#npm-scripts)
 - Examples for User, Note, and nested GraphQL Queries
 
 ## Quick Intro
@@ -551,7 +551,7 @@ Holds all the server configurations.
 
 > Note: If you use postgresql make sure postgresql server is running on the machine
 
-This two files are the way to establish a connaction to a database.
+These two files are the way to establish a connection to a database.
 
 You only need to touch connection.js, default for `development` is sqlite, but it is easy as typing `mysql` or `postgres` to switch to another db.
 
@@ -638,7 +638,7 @@ Optional:
 - `npm run drop-sqlite-db` - deletes the sqlite database file
 - `npm run lint` - linting with [eslint](http://eslint.org/)
 - `npm run nodemon` - same as `npm start`
-- `npm run prepush` - a hook wich runs before pushing to a repository, runs `npm test` and `npm run drop-sqlite-db`
+- `npm run prepush` - a hook which runs before pushing to a repository, runs `npm test` and `npm run drop-sqlite-db`
 - `pretest` - runs linting before `npm test`
 - `test-ci` - only runs tests, nothing in pretest, nothing in posttest, for better use with ci tools
 
