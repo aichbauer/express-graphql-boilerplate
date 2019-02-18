@@ -47,6 +47,7 @@ $ curl -i -H "Content-Type:application/json" -H "Authorization: Bearer <token>" 
   - [Create a Query](#create-a-query)
   - [Create a Mutation](#create-a-mutation)
   - [Create a Type](#create-a-type)
+  - [Create an InputType](#create-an-inputtype)
   - [RootQuery and Schema](#rootquery-and-schema)
 - [Models](#models)
   - [Create a Model](#create-a-model)
@@ -323,7 +324,7 @@ module.exports = { UserType };
 
 Do not forget to `require` and `export` the type in `./api/graphql/types/index.js`.
 
-### Create a InputType
+### Create an InputType
 
 InputTypes are a way to simplify your arguments on a mutation or a query. You may not need to implement InputTypes, but it is common that some kind of mutations or queries accept the same input types, what makes them pretty handy.
 
