@@ -28,9 +28,11 @@ test('User | updateUser', async () => {
   const updateMutation = `
     mutation {
       updateUser(
-        id: ${user.id}
-        username:"felix"
-        email: "felix@test2.com"
+        user: {
+          id: ${user.id}
+          username:"felix"
+          email: "felix@test2.com"
+        }
       ) {
         id
         username
@@ -80,8 +82,10 @@ test('User | updateUser | user does not exist', async () => {
   const updateMutation = `
     mutation {
       updateUser(
-        id: 9999
-        username: "Hans"
+        user: {
+          id: 9999
+          username: "Hans"
+        }
       ) {
         id
         username
@@ -113,7 +117,9 @@ test('User | deleteUser', async () => {
   const deleteMutation = `
       mutation {
         deleteUser(
-          id: ${user.id}
+          user: {
+            id: ${user.id}
+          }
         ) {
           id
           username
@@ -139,7 +145,9 @@ test('User | deleteUser | user does not exist', async () => {
   const deleteMutation = `
     mutation {
       deleteUser(
-        id: 9999
+        user: {
+          id: 9999
+        }
       ) {
         id
         username

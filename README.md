@@ -47,6 +47,7 @@ $ curl -i -H "Content-Type:application/json" -H "Authorization: Bearer <token>" 
   - [Create a Query](#create-a-query)
   - [Create a Mutation](#create-a-mutation)
   - [Create a Type](#create-a-type)
+  - [Create an InputType](#create-an-inputtype)
   - [RootQuery and Schema](#rootquery-and-schema)
 - [Models](#models)
   - [Create a Model](#create-a-model)
@@ -322,6 +323,165 @@ module.exports = { UserType };
 ```
 
 Do not forget to `require` and `export` the type in `./api/graphql/types/index.js`.
+
+### Create an InputType
+
+InputTypes are a way to simplify your arguments on a mutation or a query. You may not need to implement InputTypes, but it is common that some kind of mutations or queries accept the same input types, what makes them pretty handy.
+
+The simpliest version would of a InputType could look like this:
+
+```js
+// import the GraphQL types
+// that you need for your
+// input type
+const {
+  GraphQLInputObjectType,
+  GraphQLInt,
+  GraphQLNonNull,
+  GraphQLString,
+} = require('graphql');
+
+// create a InputType
+const UserInputType = new GraphQLInputObjectType({
+  name: 'UserInputType',
+  description: 'This represents a UserInputType',
+  fields: {
+    id: {
+      type: new GraphQLNonNull(GraphQLInt),
+    },
+    username: {
+      type: GraphQLString,
+    },
+    email: {
+      type: GraphQLString,
+    },
+  },
+});
+
+
+module.exports = { UserInputType };
+```
+
+But you can reuse the same implementation for multiple purposes of the same InputType, e.g. `update` and `delete`. To delete a user you only need to send the Id and nothing else, this could help front end developers.
+
+```js
+// import the GraphQL types
+// that you need for your
+// input type
+const {
+  GraphQLInputObjectType,
+  GraphQLInt,
+  GraphQLNonNull,
+  GraphQLString,
+} = require('graphql');
+
+// the function that accepts a
+// string, specifying the type
+// e.g. 'create', 'update', or 'delete'
+const UserInputType = (type) => {
+  let allGraphFields = {};
+  const standardGraphFields = {
+    id: {
+      type: new GraphQLNonNull(GraphQLInt),
+    },
+  };
+
+  // add args for different mutations
+  switch (type) {
+    case 'delete':
+      allGraphFields = {
+        ...standardGraphFields,
+      };
+      break;
+    case 'update':
+      allGraphFields = {
+        ...standardGraphFields,
+        username: {
+          type: GraphQLString,
+        },
+        email: {
+          type: GraphQLString,
+        },
+      };
+      break;
+    default:
+      allGraphFields = {
+        ...standardGraphFields,
+      };
+  }
+
+  // create a InputType
+  // keep in mind that
+  // one name can only
+  // exist once in a schema
+  const userInputType = new GraphQLInputObjectType({
+    name: `UserInputType${type[0].toUpperCase() + type.slice(1, type.length - 1)}`,
+    description: 'This represents a UserInputType',
+    fields: allGraphFields,
+  });
+
+  return userInputType;
+};
+
+module.exports = { UserInputType };
+```
+
+Now you can use this on a mutation or a query like:
+
+```js
+const updateUser = {
+  type: UserType,
+  description: 'The mutation that allows you to update an existing User by Id',
+  args: {
+    user: {
+      name: 'user',
+      // use the InputType
+      type: UserInputType('update'),
+    },
+  },
+  resolve: async (_, { user }) => {
+    const foundUser = await User.findById(user.id);
+
+    if (!foundUser) {
+      throw new Error(`User with id: ${user.id} not found!`);
+    }
+
+    const updatedUser = merge(foundUser, {
+      username: user.username,
+      email: user.email,
+    });
+
+    return foundUser.update(updatedUser);
+  },
+};
+
+const deleteUser = {
+  type: UserType,
+  description: 'The mutation that allows you to delete a existing User by Id',
+  args: {
+    user: {
+      name: 'user',
+      // use the InputType
+      type: UserInputType('delete'),
+    },
+  },
+  resolve: async (_, { user }) => {
+    const foundUser = await User.findById(user.id);
+
+    if (!foundUser) {
+      throw new Error(`User with id: ${user.id} not found!`);
+    }
+
+    await User.destroy({
+      where: {
+        id: user.id,
+      },
+    });
+
+    return foundUser;
+  },
+};
+```
 
 ### RootQuery, RootMutation and Schema
 
