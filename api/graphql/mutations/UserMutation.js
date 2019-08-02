@@ -14,7 +14,7 @@ const updateUser = {
     },
   },
   resolve: async (_, { user }) => {
-    const foundUser = await User.findById(user.id);
+    const foundUser = await User.findByPk(user.id);
 
     if (!foundUser) {
       throw new Error(`User with id: ${user.id} not found!`);
@@ -39,7 +39,7 @@ const deleteUser = {
     },
   },
   resolve: async (_, { user }) => {
-    const foundUser = await User.findById(user.id);
+    const foundUser = await User.findByPk(user.id);
 
     if (!foundUser) {
       throw new Error(`User with id: ${user.id} not found!`);

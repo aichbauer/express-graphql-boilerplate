@@ -47,7 +47,7 @@ const updateNote = {
     },
   },
   resolve: async (value, { id, userId, note }) => {
-    const foundNote = await Note.findById(id);
+    const foundNote = await Note.findByPk(id);
 
     if (!foundNote) {
       throw new Error(`Note with id: ${id} not found!`);
@@ -72,7 +72,7 @@ const deleteNote = {
     },
   },
   resolve: async (value, { id }) => {
-    const foundNote = await Note.findById(id);
+    const foundNote = await Note.findByPk(id);
 
     if (!foundNote) {
       throw new Error(`Note with id: ${id} not found!`);

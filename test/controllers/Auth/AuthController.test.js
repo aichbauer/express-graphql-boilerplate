@@ -29,7 +29,7 @@ test('AuthController | /rest/register', async () => {
 
   expect(res.body.user).toBeTruthy();
 
-  const user = await User.findById(res.body.user.id);
+  const user = await User.findByPk(res.body.user.id);
 
   expect(user.id).toBe(res.body.user.id);
   expect(user.email).toBe(res.body.user.email);
