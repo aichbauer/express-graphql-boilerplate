@@ -79,11 +79,11 @@ then
 # change directory to project root
 $ cd express-graphql-boilerplate
 # install dependencies
-$ yarn
+$ npm i
 # to use mysql
-$ yarn add mysql2
+$ npm i mysql2 -S
 # to use postgresql
-$ yarn add pg pg-hstore
+$ npm i pg pg-hstore -S
 ```
 
 or
@@ -92,11 +92,11 @@ or
 # change directory to project root
 $ cd express-graphql-boilerplate
 # install dependencies
-$ npm i
+$ yarn
 # to use mysql
-$ npm i mysql2 -S
+$ yarn add mysql2
 # to use postgresql
-$ npm i pg pg-hstore -S
+$ yarn add pg pg-hstore
 ```
 
 SQLite is supported out of the box as it is the default database.
@@ -225,7 +225,7 @@ const updateUser = {
   // find the User in the DB
   // update the fields for this user
   resolve: async (user, { id, username, email }) => {
-    const foundUser = await User.findById(id);
+    const foundUser = await User.findByPk(id);
 
     if (!foundUser) {
       throw new Error(`User with id: ${id} not found!`);
@@ -253,7 +253,7 @@ const deleteUser = {
     },
   },
   resolve: async (user, { id }) => {
-    const foundUser = await User.findById(id);
+    const foundUser = await User.findByPk(id);
 
     if (!foundUser) {
       throw new Error(`User with id: ${id} not found!`);
@@ -440,7 +440,7 @@ const updateUser = {
     },
   },
   resolve: async (_, { user }) => {
-    const foundUser = await User.findById(user.id);
+    const foundUser = await User.findByPk(user.id);
 
     if (!foundUser) {
       throw new Error(`User with id: ${user.id} not found!`);
@@ -466,7 +466,7 @@ const deleteUser = {
     },
   },
   resolve: async (_, { user }) => {
-    const foundUser = await User.findById(user.id);
+    const foundUser = await User.findByPk(user.id);
 
     if (!foundUser) {
       throw new Error(`User with id: ${user.id} not found!`);
@@ -715,9 +715,9 @@ These two files are the way to establish a connection to a database.
 
 You only need to touch connection.js, default for `development` is sqlite, but it is easy as typing `mysql` or `postgres` to switch to another db.
 
-> Note: To run a mysql db install these package with: `yarn add mysql2` or `npm i mysql2 -S`
+> Note: To run a mysql db install these package with: `npm i mysql2 -S` or `yarn add mysql2`
 
-> Note: To run a postgres db run these package with: `yarn add pg pg-hstore` or `npm i -S pg pg-hstore`
+> Note: To run a postgres db run these package with: `npm i -S pg pg-hstore` or `yarn add pg pg-hstore`
 
 Now simple configure the keys with your credentials.
 
@@ -841,7 +841,7 @@ $ sudo apt-get install nginx git-all
 $ curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
 $ sudo apt-get install -y nodejs
 # install forever js
-$ npm i -g forever yarn
+$ npm i -g forever
 # now copy your project to the server
 $ git clone https://example.com/your/repository
 ```
@@ -852,9 +852,9 @@ To use this project with `postgres` you need to install two additional packages 
 # cd into your project
 $ cd project
 # install dependencies
-$ yarn
+$ npm i
 # install two new packages for postgres
-$ yarn add pg pg-hstore
+$ npm i pg pg-hstore -S
 # start project with forever
 $ NODE_ENV=production DB_NAME=DB_NAME DB_USER=DB_USER DB_PASS=DB_PASS DB_HOST=DB_HOST DB_PORT=DB_PORT JWT_SECRET=JWT_SECRET forever start -c node ./api/api.js
 ```
