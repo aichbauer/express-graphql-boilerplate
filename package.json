@@ -47,7 +47,7 @@
     "helmet": "^3.15.0",
     "jsonwebtoken": "^8.4.0",
     "lodash.merge": "^4.6.1",
-    "sequelize": "^6.0.0",
+    "sequelize": "^5.21.9",
     "sqlite3": "^4.0.4"
   },
   "devDependencies": {
