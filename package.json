@@ -36,7 +36,7 @@
     ]
   },
   "dependencies": {
-    "apollo-server-express": "^2.2.2",
+    "apollo-server-express": "^2.14.2",
     "bcrypt-nodejs": "^0.0.3",
     "body-parser": "^1.18.2",
     "core-js": "^2.6.5",
